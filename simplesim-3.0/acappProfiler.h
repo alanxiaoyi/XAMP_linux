@@ -1,0 +1,11 @@
+char *cseq_outfile;
+void initcache(int numsets, int numassoc, int bsize);
+void printset(int set);
+void extprintset(int set);
+void hitStackShift(int setNum, int hitPoint);
+void exthitStackShift(int setNum, int exthitPoint);
+void missStackShift(int setNum, int tag);
+void extmissStackShift(int setNum, int tag);
+int hitOrMissFunc(int setNum, int tag);
+int exthitOrMissFunc(int setNum, int tag);
+void printCacheStats();

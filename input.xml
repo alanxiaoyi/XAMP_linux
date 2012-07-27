@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<input name="BRc GB/s" value="" discription="bandwidth requirement of the starting cache, from model [6]; " />
+<input name="CPI_infinitL2,i" value="" discription="thread is CPI when assuming infinit L2 cache, from model [7]; " />
+<input name="CPI_alone,i" value="" discription="Thread is CPI when running alone in a CMP system, from model [7]; " />
+<input name="CPIpreL2" value="" discription="CPI in the core and L1s, from model [9]; " />
+<input name="L2_miss_penalty,i" value="" discription="thread is L2 miss penalty, from model [7]; " />
+<input name="L2_miss_penalty" value="" discription="cache access penalty, in number of cycles, from model [9]; " />
+<input name="annual_bw_growth" value="" discription="bandwidth growth rate per year, from model [4]; " />
+<input name="apiL2" value="" discription="L2 accesses per inst , from model [9]; " />
+<input name="associtivity_number" value="" discription=", from model [3];  number of associativity, from model [8]; " />
+<input name="big_core_speed" value="" discription="big core speed (small core is 1), from model [5]; " />
+<input name="block_size" value="" discription="block size (Bytes), from model [7];  block size (Bytes), from model [9]; " />
+<input name="cache_access_frequency" value="" discription="thread i&apos;s access frequency (million/s), from model [7]; " />
+<input name="chip_area" value="" discription="base line chip area (in CEAs), from model [4];  total area of the chip for cores and cache, in CEAs, 1 CEA equal to 1MB cache area, from model [9]; " />
+<input name="core_number" value="" discription="base line core number , from model [4];  circular profile file path, from model [9]; " />
+<input name="core_area" value="" discription="area of each core in CEAs, from model [9]; " />
+<input name="core_frequency" value="" discription="processor frequency GHz, from model [9]; " />
+<input name="csqfile2" value="" discription="circular profile file 2 path, from model [1]; " />
+<input name="csqfile" value="" discription="circular profile or stack distance profile file path, from model [3]; " />
+<input name="csqfile1" value="" discription="circular profile file path, from model [1];  circular profile file path, from model [2];  circular profile file path, from model [8]; " />
+<input name="data_sharing_impact_factor" value="" discription="Data sharing impact on miss rates, from model [9]; " />
+<input name="direct_factor" value="" discription="factor for direct technique, from model [4]; " />
+<input name="factor_p" value="" discription="constant determined by process technology, from model [6]; " />
+<input name="fparn" value="" discription="fraction of parallel part outside critical section, from model [5]; " />
+<input name="fparc" value="" discription="fraction of parallel part inside critical section, from model [5]; " />
+<input name="fs" value="" discription="fraction of program that cannot be parallelized, from model [9]; " />
+<input name="hit_latency" value="" discription="L2 access time in cycle, from model [9]; " />
+<input name="indirect_factor" value="" discription="factor for indirect technique, from model [4]; " />
+<input name="init_cache_size" value="" discription="starting level cache size, from model [6]; " />
+<input name="memory_bandwidth, B/s" value="" discription="bandwidth provided by the main memory (Bytes/S), from model [7]; " />
+<input name="memory_bandwidth, GB/s" value="" discription="bandwidth provided by the main memory , from model [6];  bandwidth provided by the main memory  GB/s, from model [9]; " />
+<input name="miss_rate" value="" discription="thread i&apos;s L2 missrate, from model [7]; " />
+<input name="miss_rate_for_1M cache" value="" discription="L2 miss rate for a 1MB L2, from model [9]; " />
+<input name="parameter_a" value="" discription="ACS parameter, from model [5]; " />
+<input name="parameter_b" value="" discription="ACS parameter, from model [5]; " />
+<input name="pctn" value="" discription="contention probability, from model [5]; " />
+<input name="powerlaw_index" value="" discription="can use 0.5, from model [4];  , from model [9]; " />
+<input name="rpindex" value="" discription="replace policy file, from model [2]; " />
+<input name="shift_amount" value="" discription="shift amount, from model [8]; " />
+<input name="thread_number" value="" discription="number of threads, from model [5];  number of threads, from model [7]; " />

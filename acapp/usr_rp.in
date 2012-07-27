@@ -1,0 +1,8 @@
+#This is the configuration file of user specified replacement policy.  
+#Please do no change the format of this file,
+#or the NAME, ASSOC or PROB keywords.  Only the values of each of these
+#can be changed by the user.
+NAME newrp
+ASSOC 4
+PROB
+0.25 0.25 0.25 0.25

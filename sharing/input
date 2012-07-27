@@ -1,0 +1,33 @@
+*******input file for data sharing model*******
+CPIpreL2(CPI in the core and L1s)
+2
+apiL2(L2 accesses per inst) 
+0.033
+lL2(L2 hit latency)
+4
+n(number of cores)
+32
+AC(total area of the chip for cores and cache, in CEAs) //1 CEA equal to 1MB cache area
+256
+Ac(area of each core in CEAs)
+1
+m1MBL2 (L2 miss rate for a 1MB L2)
+0.6
+a(power law index)
+0.5
+E(n)(Data sharing impact on miss rates)
+0.5
+TM(memory access penalty, in number of cycles)
+400
+B(memory bandwidth in GB/s)
+30
+f(processor frequency)
+2
+bL2(L2 cache block size in bytes)
+64
+fs(fraction of program that cannot be parallelized)
+0.01
+1M_acctime(1M cache access time /ns //use to predict cache access time. you can also leave it absent, then the tool will use constant L2 hit latency when vary cache size)
+2
+nM_acctime(nM cache access time /ns  //n should equal to the AC)
+100

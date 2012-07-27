@@ -1,0 +1,20 @@
+#!/bin/bash
+
+
+
+
+for dir in *
+do
+	if [ -d "$dir" ] ;	then
+		if [ "$1" = "clean" ] 
+		then
+			cd $dir
+			make clean
+			cd ..
+		else 
+			cd $dir
+			make
+			cd ..
+		fi
+	fi
+done

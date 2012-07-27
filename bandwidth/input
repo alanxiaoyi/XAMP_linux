@@ -1,0 +1,20 @@
+******this input is used for bandwidth partition model*********
+#number of cores
+2
+#Mi (thread i's L2 cache miss rate)
+0.8 0.4
+#Ai (thread i's L2   access frequency  million/s)
+2 2
+//You can always set (CPIalone,i/CPIinfinitL2,i)=1 to make an reasonable approximation
+#CPIalone,i (thread i's CPI when running alone in a CMP system)
+3.5 3
+#CPI,infinitL2,i (thread i's CPI assuming infinite L2 cache size)
+3.5 3
+#tm,i (thread i's average L2 miss penaly   /#cycles)
+20 20
+#fclk (GHZ)
+5
+#B (peak off-chip memory bandwidth  Byte/sec)
+1.6
+#K (Block size/ Bytes)
+64
