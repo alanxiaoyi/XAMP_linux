@@ -88,7 +88,7 @@ int main(int argc, char *argv[]){
 			n=0;
 			flag=0;
 			while(it->output[n][0]!=""){
-				if(it->output[n][0].find(output)!=-1){
+				if(it->output[n][0].find(output)!=-1 || it->output[n][1].find(output)!=-1){
 					flag=1;
 					break;
 				}
@@ -101,11 +101,17 @@ int main(int argc, char *argv[]){
 		parse_config(config_file_name,false);
 		k=atoi(argv[2]);
 		it=find_model(k);
+		cout<<"\n---------------\n";
 		cout<<"model: "<<it->name<<endl;
+		cout<<"---------------\n";
 		cout<<"model discription:"<<endl;
-		cout<<it->comment<<endl;		
+		cout<<"---------------\n";
+		cout<<it->comment<<endl;
+		cout<<"---------------\n";		
 		cout<<"model user guide:"<<endl;
+		cout<<"---------------\n";
 		cout<<it->guide<<endl;
+		cout<<"---------------\n";
 	}
 	
 	else if((argc==2) && (strcmp(argv[1], "-input_check")==0)){		//input based search
@@ -140,12 +146,14 @@ int main(int argc, char *argv[]){
 		k=atoi(argv[2]);
 		it=find_model(k);
 		int n=0;
-		cout<<"inputs:"<<endl;
+		cout<<"\ninputs:"<<endl;
+		cout<<"---------------\n";
 		while(it->input[n][0]!=""){
 			cout<<it->input[n][0]<<": "<<it->input[n][1]<<"     //"<<it->input[n][2]<<endl;
 			n++;			
 		}
 		cout<<"outputs:"<<endl;
+		cout<<"---------------\n";
 		n=0;
 		while(it->output[n][0]!=""){
 			cout<<it->output[n][0]<<endl;

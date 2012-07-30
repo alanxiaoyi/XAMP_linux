@@ -121,9 +121,17 @@ void error_loading_dialog(){
 /*parse input button
 */
 void cb_ibutton(GtkWidget *widget, gpointer data) {
-				g_print("push input button\n"); 
+				g_print("push parse input button\n"); 
 				parse_input_file(input_file_name);
 } 
+
+/* input deduction button
+*/
+void cb_dbutton(GtkWidget *widget, gpointer data) {
+				g_print("push input deduction button\n"); 
+				input_deduction();
+} 
+
 
 /*parse config file button
 */
@@ -195,7 +203,7 @@ int call_gui() {
     gdk_threads_init();
 	gtk_init(NULL, NULL);
 	GtkWidget *hbox_head,*hbox1, *hbox2, *hbox3 ,*hbox4,*hbox4_1,*hbox4_2,*hbox_desc, *vbox;
-	GtkWidget *exit_button,*input_button,*enter_button,*config_button,  *combo,*combotext,*headtext;
+	GtkWidget *exit_button,*input_button,*deduction_button,*enter_button,*config_button,  *combo,*combotext,*headtext;
 	GtkWidget *buttonbox1,*frame0, *frame1, *frame2, *frame3, *frame4, *frame5, *vbox_s3,*vbox_s2;
 	GtkWidget *scrolledwindow1,*scrolledwindow2,*scrolledwindow3,*scrolledwindow4,*scrolledwindow_all;
 	GtkObject *vadjust,*hadjust;
@@ -259,11 +267,13 @@ int call_gui() {
 	/*button variable
 	*/
 	exit_button = gtk_button_new_with_label("Exit");
-	input_button = gtk_button_new_with_label("Parse input file");
+	input_button = gtk_button_new_with_label("Parse Input File");
+	deduction_button = gtk_button_new_with_label("Input Deduction");
 	config_button = gtk_button_new_with_label("Parse config and create new input file");
 	enter_button = gtk_button_new_with_label("Enter");
 	g_signal_connect(G_OBJECT(exit_button), "clicked", G_CALLBACK(cb_qbutton),NULL);
 	g_signal_connect(G_OBJECT(input_button), "clicked", G_CALLBACK(cb_ibutton),NULL);
+	g_signal_connect(G_OBJECT(deduction_button), "clicked", G_CALLBACK(cb_dbutton),NULL);
 	g_signal_connect(G_OBJECT(enter_button), "clicked", G_CALLBACK(cb_ebutton),GTK_ENTRY(textmove->editor));
 	g_signal_connect(G_OBJECT(config_button), "clicked", G_CALLBACK(cb_cbutton),combo);
 
@@ -310,6 +320,7 @@ int call_gui() {
 	buttonbox1=gtk_hbutton_box_new ();
 	gtk_container_add(GTK_CONTAINER(buttonbox1), config_button); 	 
 	gtk_container_add(GTK_CONTAINER(buttonbox1), input_button); 
+	gtk_container_add(GTK_CONTAINER(buttonbox1), deduction_button);
 	gtk_button_box_set_layout (GTK_BUTTON_BOX(buttonbox1),GTK_BUTTONBOX_SPREAD);
 	gtk_box_set_spacing (GTK_BOX(buttonbox1),5);
 	
