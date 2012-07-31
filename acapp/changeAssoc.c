@@ -48,7 +48,7 @@ void sumAssoc(char Astr1[], char Astr2[]){
 		}   
 		newmiss_rate = (double)new_misses/sum_b1;
 
-		printf("When A=%d, Miss rate is:  %f\n",j, newmiss_rate);
+		printf("Miss rate for A = %d:  %f\n",j, newmiss_rate);
 	}
 }
 
