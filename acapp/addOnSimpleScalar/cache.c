@@ -530,6 +530,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
   /* ACAPP Modification Begin */
   double dtag = (double)tag;
   double dset = (double)set;
+
  
   if (strcmp("ul2",cp->name) == 0) {
  	 

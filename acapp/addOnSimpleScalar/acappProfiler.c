@@ -46,11 +46,11 @@ void initcache(int numsets, int numassoc, int bsize)
   nsets = numsets;	
   nassoc = numassoc;	
   nbsize = bsize;
-  cseqrows = 100;
+  cseqrows = 200;
   
 
   extcache = malloc(nsets * sizeof(matrix));
-  cseqtable = malloc(cseqrows * sizeof(int));
+  cseqtable = malloc(cseqrows * sizeof(int*));			//yw: modify to int*
   cache = malloc(nsets * sizeof(matrix));
   weightedAvg = malloc(dmax * sizeof(double));
   stackDist = malloc((dmax+1) * sizeof(int));
@@ -68,8 +68,15 @@ void initcache(int numsets, int numassoc, int bsize)
    }
   
   for ( i=0; i < cseqrows; i++ ) {
-    cseqtable[i] = malloc(dmax * sizeof(matrix));
+    cseqtable[i] = malloc(dmax * sizeof(int));   // yw: modify to dmax
   }
+	
+	for (j = 0; j < cseqrows; j++) {		//yw: add init
+		for (i = 0; i < dmax; i++) {
+			cseqtable[j][i]=0;
+		}
+	}
+	
 	
   for ( i=0; i < nsets; i++ ) {
     extcache[i] = malloc(dmax * sizeof(matrix));
@@ -85,7 +92,6 @@ void initcache(int numsets, int numassoc, int bsize)
   
    	}
    }
-  
   printf("Cache Initialization done \n");
   
 }
@@ -140,7 +146,7 @@ void calcWeightedAvg(){
 		
 		rSum = 0;
 		weightedSum = 0;
-		for (n = 0; n < cseqrows; n++) {
+		for (n = i+1; n < cseqrows; n++) {		//yw: modify n=0 to n=i+1 since n>=d+1
 		weightedSum+= (n+1)*cseqtable[n][i];
 		rSum += cseqtable[n][i];
 		
@@ -148,6 +154,7 @@ void calcWeightedAvg(){
 		stackDist[i] = rSum; //sum of all values in each d
 		if (rSum != 0)		
 		weightedAvg[i] = (double)((double)weightedSum/(double)rSum);
+		
 		else weightedAvg[i] = 0;
 		
 		
@@ -226,7 +233,7 @@ void exthitStackShift(int setNum, int exthitPoint)
 			for (i = dmax - 1; i > 0; i--)
 			{
 			
-	extcache[setNum][i] = extcache[setNum][i-1];
+				extcache[setNum][i] = extcache[setNum][i-1];
 				
 			}
 			extcache[setNum][0] = temp;
@@ -249,8 +256,11 @@ void exthitStackShift(int setNum, int exthitPoint)
 		extcache[setNum][i].count++;	
 	
 	int n = temp.count;
-	cseqtable[n-1][exthitPoint]++;
+	if(n>cseqrows) n=cseqrows;				//yw: add a check
 	
+	cseqtable[n-1][exthitPoint]++;
+//  printf("%d",n);
+//	printf("%d, %d\n", n, exthitPoint);
 	
 }
 
@@ -349,7 +359,7 @@ int hitOrMissFunc(int setNum, int tag)
 	return hitOrMiss;
 }
 
-
+//this method is the entrance from cache.c
 int exthitOrMissFunc(int setNum, int tag)
 {
 	int i;
@@ -359,7 +369,7 @@ int exthitOrMissFunc(int setNum, int tag)
 	{
 		//hit
 		if (extcache[setNum][i].tag == tag)
-		{
+		{ //	printf("%d  ", i);
 			exthitPoint = i;
 			exthitOrMiss = 1;
 			break;
@@ -398,6 +408,20 @@ void printCacheStats()
 	miss_rate = (double)(num_misses)/(double)(num_hits + num_misses);
 	extmiss_rate = (double)(extnum_misses)/(double)(extnum_hits + extnum_misses);
 	calcWeightedAvg();
+	
+	char cseq_outfile_whole[256];
+	strcpy(cseq_outfile_whole,cseq_outfile);
+	strcat(cseq_outfile_whole,"_whole.csq");
+	Fp = fopen(cseq_outfile_whole,"w");
+	
+	for (j = 0; j < cseqrows; j++) {
+		for (i = 0; i < dmax; i++) {
+		fprintf(Fp, "%d ",cseqtable[j][i]);
+		}
+		fprintf(Fp, "\n");
+	} 
+	fclose(Fp);
+	
 	//Print to screen
         /*
 	printf("\n********** EXT NEW CACHE STATS (L2) ******** \n");
@@ -409,13 +433,7 @@ void printCacheStats()
 	printf("\nNumber of hits: %d", extnum_hits);
 	printf("\nNumber of cache accesses: %d", extnum_hits + extnum_misses);
 	printf("\nCache miss rate: %f \n"  , extmiss_rate);
-	for (j = 0; j < 10; j++) {
-		for (i = 0; i < nassoc; i++) {
-		printf("%d ",cseqtable[j][i]);
-		}
-		printf("\n");
-	}
-	
+
 	printf("Cache contents \n");
 	for (j = 0; j < 10; j++) {
 		for (i = 0; i < nassoc; i++) {
