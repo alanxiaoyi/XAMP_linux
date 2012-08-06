@@ -35,7 +35,6 @@ int main(int argc, char *argv[]){
 		k=construct_menu();
 		it=find_model(k);
 		while(!init_model(it, 1, "")) k=construct_menu();     //since wait for user input, no need of cmd argv
-//		call_model(carg);
 	}
 	else if((argc==2) && (strcmp(argv[1], "-l")==0)){				//list all the models
 		parse_config(config_file_name,false);	
@@ -62,20 +61,17 @@ int main(int argc, char *argv[]){
 				tmp1=tmp1+tmp2+" ";
 			}
 		}					
-//		cout<<tmp1;
 		k=atoi(argv[2]);
 		it=find_model(k);	
 		init_model(it,0, tmp1);
-//		call_model(carg);
 	}
-	else if((argc==4) && (strcmp(argv[1], "-c_dft")==0)){		//directly call a model with defalt input
+	else if((argc==4) && (strcmp(argv[1], "-c_dft")==0)){			//directly call a model with defalt input
 		parse_config(config_file_name,false);
 		int tmp=atoi(argv[3]);
 		assert(tmp>0);
 		k=atoi(argv[2]);
 		it=find_model(k);
 		init_model(it,0, it->dft[tmp-1]);
-//		call_model(carg);
 
 	}
 	else if((argc==3) && (strcmp(argv[1], "-s")==0)){				//output based search
@@ -175,7 +171,7 @@ int init_model(	list<model_class>::iterator it,  int waitornot, string cmd){
 	string s;
 	int n=1;
 	char cmd_param[256];
-	for(int i=0;i<command_param_num;i++){									 //initialize 
+	for(int i=0;i<command_param_num;i++){						//initialize 
 		carg[i]=new char [256];
 	}
 	
@@ -184,7 +180,7 @@ int init_model(	list<model_class>::iterator it,  int waitornot, string cmd){
 		cout<<it->comment<<endl;   				    			//cout the comment(help) of the model	
 		cout<<it->guide<<endl;
 		cout<<"please enter the parameter the model needs below, or enter \"back\" to go back"<<endl;
-		cin.getline(cmd_param, 256);   								//get the parameters
+		cin.getline(cmd_param, 256);   							//get the parameters
 		string str=cmd_param;
 		stringstream ss(str);
 		while(ss>>s){											// split the parameters and save them to carg[n]
@@ -427,7 +423,6 @@ int call_model(char** carg){
 		int status;
 		pid_t pid;
 		pid=wait(&status);
-//		cout<<pid<<endl;
     }
 	release_mem_pp(carg);
 	return 1;

@@ -2,7 +2,7 @@
 
 
 #define num_of_deduction 2        //modify this if add new deduction function
-#define num_of_argus 10        //modify this if add new deduction function
+#define num_of_argus 10        
 
 using namespace std;
 
@@ -15,7 +15,7 @@ string func_pointer1(string*);      //add new deduction function declaration her
 //define a function pointer array to save all deduction functions
 string (*func_pointer[num_of_deduction])(string*)={
 	func_pointer0,
-	func_pointer1					// also add new deduction function here
+	func_pointer1					// add new deduction function here: save into the function pointer array
 };              						
 
 
@@ -29,16 +29,27 @@ int input_deduction(){
 		argu[j]="";
 	}
 	
-	i2i[0][0]="powerlaw_index";
-	i2i[0][1]="csqfile1";
+/*add source and destination of new deduction.
+For example, i2i[0][0] is the destination(power law index a) 
+of the deduction. This deduction needs one source: csqfile path.
+Put destination in i2i[n][0], sources follow behind*/ 
+
+	i2i[0][0]="powerlaw_index";			//dest
+	i2i[0][1]="csqfile1";				//source
 
 	
-	i2i[1][0]="CPI_infinitL2,i";
-	i2i[1][1]="CPIpreL2";			//add source and destination of new deduction 
+	i2i[1][0]="CPI_infinitL2,i";		//dest
+	i2i[1][1]="CPIpreL2";			
 	i2i[1][2]="apiL2";
 	i2i[1][3]="hit_latency";
 
-		
+
+
+
+/*************************************************************/
+/*you don't need to change any code between the sign*/
+/*************************************************************/
+	
 	list<input_class>::iterator it;
 	list<input_class>::iterator itc;
 	int derivesomething=0;
@@ -84,11 +95,18 @@ int input_deduction(){
 	}
 	return derivesomething;
 }
+/*************************************************************/
+/*you don't need to change any code between the sign*/
+/*************************************************************/
 
 
-/*deduction function 1 for csq to power law index value
+
+
+/*Below, you should implement your deduction functions.
+from argu[1] are the sources you designated in the 2-d array.
+argu[0] is the destination
 */
-string func_pointer0(string* argu){
+string func_pointer0(string* argu){ 		//deduction function 1 for csq to power law index value.
 	int N=0;
 	int assoc;
 	int scale_f;
@@ -154,7 +172,6 @@ string func_pointer0(string* argu){
 		N=stack[n]+N;
 		n++;	
 	}
-//	cout<<"N="<<N;
 	for(int i=0; i<nassoc;i++){
 		int j=i+1;
 
@@ -163,11 +180,8 @@ string func_pointer0(string* argu){
 			j++;
 		}
 		missrate[i]=(double)total_misses[i]/N;
-//		cout<<"missrate: "<<missrate[i]<<endl;
 		m_log[i]=log(missrate[i]);
-//		cout<<m_log[i]<<"\t";
 		c_log[i]=log(i+1);
-//		cout<<c_log[i]<<endl;
 	}
 //for least square regression	
 	float x_square_sum=0;
@@ -194,7 +208,6 @@ string func_pointer0(string* argu){
 	gcvt(a,4,at);
 	A=at;
 	csq.close();
-//	cout<<"is"<<A<<endl;
 	return A;
 }
 

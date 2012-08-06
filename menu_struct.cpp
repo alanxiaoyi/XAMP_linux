@@ -17,8 +17,8 @@ int construct_menu(){
 		 flag=0;
 		 m=0;
 		 cout<<s_line<<endl;
-		 cout<<"1. what you want? "<<endl;
-		 cout<<"2. what you have? "<<endl;
+		 cout<<"1. What do you want? "<<endl;
+		 cout<<"2. What do you have? "<<endl;
 		 cin>>l1;
 		if(cin.fail()){
 			cin.clear();
@@ -28,7 +28,7 @@ int construct_menu(){
          cout<<s_line<<endl;
 		switch(l1)	{
 			case 1:  
-				cout<<"choose the number of model you want to use, or enter something else to go back"<<endl;
+				cout<<"Choose the number of model you want to use, or enter something else to go back"<<endl;
 				for(itm=model_list.begin(); itm!=model_list.end();itm++){   //search the model in the link list
 					cout<<itm->num<<". "<<itm->name<<endl;
 				}				

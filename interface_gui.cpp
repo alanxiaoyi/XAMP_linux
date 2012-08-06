@@ -37,7 +37,7 @@ int init_model(	list<model_class>::iterator it,  int waitornot, string cmd){
 	string s;
 	int n=1;
 	char cmd_param[256];
-	for(int i=0;i<command_param_num;i++){									 //initialize 
+	for(int i=0;i<command_param_num;i++){						//initialize 
 		carg[i]=new char[256];
 	}
 	
@@ -46,7 +46,7 @@ int init_model(	list<model_class>::iterator it,  int waitornot, string cmd){
 		cout<<it->comment<<endl;   				    			//cout the comment(help) of the model	
 		cout<<it->guide<<endl;
 		cout<<"please enter the parameter the model needs below, or enter \"back\" to go back"<<endl;
-		cin.getline(cmd_param, 256);   								//get the parameters
+		cin.getline(cmd_param, 256);   							//get the parameters
 		string str=cmd_param;
 		stringstream ss(str);
 		while(ss>>s){											// split the parameters and save them to carg[n]
@@ -56,7 +56,7 @@ int init_model(	list<model_class>::iterator it,  int waitornot, string cmd){
 			n++;
 		}
 	}	
-	else if(waitornot==0){						//directly call the model with the default inputs. i.e. -c <number of model> <command line parameters>
+	else if(waitornot==0){										//directly call the model with the default inputs. i.e. -c <number of model> <command line parameters>
 		parse_cmd(&cmd);
 		cout<<"The command you use is:"<<" "<<cmd<<endl;
 		if(cmd.find('*')!=string::npos) {cout<<"should not have * here"<<endl; exit(1);}					//check status
@@ -204,13 +204,6 @@ int read_pipe(string pipe_tag, string* subst, string ops){
 /*for process and call a model
 */
 int call_model(char** carg){
-/*
-   int pfd[2];
-   if(pipe(pfd)<0){
-		cout<<"pipe error!"<<endl;
-		exit(0);  
-   }
-  */ 
    
 	char redirectin_info[256];
 	char redirectout_info[256];
@@ -220,13 +213,13 @@ int call_model(char** carg){
    for(int i=0; i<command_param_num-1;i++){					//check if there are "<" or ">" in command line.
   		if(carg[i]!=NULL){
    		if((strcmp(carg[i],"<")==0) &&  (carg[i+1]!=NULL)){
- //  			redirectin_info=new char[sizeof(carg[i+1])];
+
    			strcpy(redirectin_info, carg[i+1]);
 			in_flag=true;
 		}
 		/*FIX ME: ">" actually not necessary, havn't use it yet*/
 		else if((strcmp(carg[i],">")==0) &&  (carg[i+1]!=NULL)){
-//	  		redirectout_info=new char[sizeof(carg[i+1])];
+
 			strcpy(redirectout_info, carg[i+1]);
 			out_flag=true;
 		}
@@ -257,13 +250,11 @@ int call_model(char** carg){
    			if(!r_in) {cout<<"open input stream file failed"<<endl; chdir(olddir); fclose(stdin); exit(1);}
    		}   
    
-//		if(recur_counter>1){									//if it is the recursive called models
 			chdir(olddir);
 			FILE *f=freopen ("pipe.tmp","w",stdout);			//redirect recursive model's stdout to pipe.tmp file 
 			chdir(newdir.c_str());
 			if(!f) {cout<<"create pipe.tmp failed"; chdir(olddir); fclose(stdout); if(in_flag==true) fclose(stdin); exit(1);}
-//		}
-//		else if(recur_counter==1) cout<<"----------final output is :----------"<<endl;	
+
 
 		int i=execv(exe_name.c_str(), carg);
 		if(-1==i){
@@ -272,7 +263,6 @@ int call_model(char** carg){
 			exit(1);
 		}
 		chdir(olddir);						//change working directory back to the interface directory
-//		if(recur_counter>1)
 		fclose (stdout);
 		if(in_flag==true)
 			fclose (stdin);

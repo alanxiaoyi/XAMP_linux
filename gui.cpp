@@ -93,7 +93,6 @@ void cb_ebutton(GtkWidget *widget,GtkEntry *editor) {
 	
 //try to fork new process to run the model since we don't want it block the window
 			
-//	signal(SIGCHLD, handler);
 	thread=NULL;
 	GError* error=NULL;
 	thread = g_thread_create( thread_func, (gpointer)editor,

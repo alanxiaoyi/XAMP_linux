@@ -140,9 +140,8 @@ int parse_config(const char* a, bool createornot){
 			}
 		}
 		input_list_t.sort(compare_input);
-		
-	 //create the "input" file		
-		create_input_file(input_list_t);
+			
+		create_input_file(input_list_t);				 //create the "input" file	
 
 	}
 	cout<<"*parsing over!*"<<endl;
@@ -189,10 +188,10 @@ int parse_input_file(const char* a){
 	
 }
 
-/*set ready bit for each model
+/*check if one model is ready to use(have all inputs), and set the ready bit
 */
+ 
 int check_ready(){
-/*check if one model is ready to use(have all inputs), and set the ready bit*/ 
 	int n;
 	int flag;
 	list<model_class>::iterator it;
