@@ -209,8 +209,21 @@ sim_print_stats(FILE *fd)		/* output stream */
 #endif
 
   /********** Modification for ACAPP tool **********/
-      printCacheStats();
-
+ //   printf("%d\n", profile_level);
+	if(profile_level==2){		//	printf("hahahaha\n");	 
+	//	int h = hitOrMissFunc(dset, dtag);
+		int i;
+		for(i=0; i<=profile_max-profile_min; i++){	
+			printCacheStats(pcache2[i]);
+		}
+	}
+	if(profile_level==1){	 
+	//	int h = hitOrMissFunc(dset, dtag);
+		int i;
+		for(i=0; i<=profile_max-profile_min; i++){	
+			printCacheStats(pcache1[i]);
+		}
+	}
   /* print simulation stats */
 	
   fprintf(fd, "\nsim: ** simulation statistics **\n");
@@ -359,6 +372,10 @@ main(int argc, char **argv, char **envp)
     }
   /* else, exec_index points to simulated program arguments */
 
+  /************modification for XAMP*************/
+  cseq_outfile=argv[exec_index];
+  /***************end****************************/
+  
   /* check simulator-specific options */
   sim_check_options(sim_odb, argc, argv);
 

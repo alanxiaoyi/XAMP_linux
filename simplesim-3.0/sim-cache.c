@@ -65,8 +65,14 @@
 #include "syscall.h"
 #include "dlite.h"
 #include "sim.h"
+
 /********** Modification for ACAPP tool **********/
 #include "acappProfiler.h"
+
+/********** Modification for XAMP **********/
+#include "cache_ff.h"
+
+
 /*
  * This file implements a functional cache simulator.  Cache statistics are
  * generated for a user-selected cache and TLB configuration, which may include
@@ -325,6 +331,21 @@ sim_reg_options(struct opt_odb_t *odb)	/* options database */
 		      "profile stat(s) against text addr's (mult uses ok)",
 		      pcstat_vars, MAX_PCSTAT_VARS, &pcstat_nelt, NULL,
 		      /* !print */FALSE, /* format */NULL, /* accrue */TRUE);
+			  
+			  
+/********** Modification for XAMP **********/			  
+ opt_reg_int(odb, "-fastfwd", "number of insts skipped before timing starts",
+	      &fastfwd_count, /* default */0,
+	      /* print */TRUE, /* format */NULL);
+
+ opt_reg_int(odb, "-profile_level", "which level of profile cache",
+	      &profile_level, /* default */2,
+	      /* print */TRUE, /* format */NULL);
+
+ opt_reg_string(odb, "-profile_sets", "number of sets of the profile cache",
+	      &profile_set_string, /* default */"default",
+	      /* print */TRUE, /* format */NULL);
+/********** Modification end **********/
 
 }
 
@@ -335,7 +356,12 @@ sim_check_options(struct opt_odb_t *odb,	/* options database */
 {
   char name[128], c;
   int nsets, bsize, assoc;
-
+  
+/********** Modification for XAMP **********/	
+  if (fastfwd_count < 0 || fastfwd_count >= 2147483647)
+    fatal("bad fast forward count: %d", fastfwd_count);
+/********** Modification end **********/
+	
   /* use a level 1 D-cache? */
   if (!mystricmp(cache_dl1_opt, "none"))
     {
@@ -355,6 +381,27 @@ sim_check_options(struct opt_odb_t *odb,	/* options database */
 			       /* usize */0, assoc, cache_char2policy(c),
 			       dl1_access_fn, /* hit latency */1);
 
+	/********** Modification for XAMP tool **********/			
+	if(profile_level==1){
+		if(!mystricmp(profile_set_string, "default")){
+			 pcache1[0]=malloc(sizeof(profile_cache));
+			 initcache(pcache1[0],nsets,assoc,bsize);
+		}
+		else{
+			int i=0;
+			if(sscanf(profile_set_string,"%d:%d",&profile_min,&profile_max)!=2)
+					fatal("bad profile cache sets number");
+			for(i=0; i<=profile_max-profile_min; i++){
+				pcache1[i]=malloc(sizeof(profile_cache));
+
+				int tmp;
+				tmp=pow(2,profile_min+i);
+				initcache(pcache1[i],tmp,assoc,bsize);
+			}
+		}
+	}
+	/********** Modification	end **********/		 
+	
       /* is the level 2 D-cache defined? */
       if (!mystricmp(cache_dl2_opt, "none"))
 	cache_dl2 = NULL;
@@ -367,8 +414,28 @@ sim_check_options(struct opt_odb_t *odb,	/* options database */
 	  cache_dl2 = cache_create(name, nsets, bsize, /* balloc */FALSE,
 				   /* usize */0, assoc, cache_char2policy(c),
 				   dl2_access_fn, /* hit latency */1);
-	/********** Modification for ACAPP tool **********/
-	  initcache(nsets,assoc,bsize);
+				   
+	/********** Modification for XAMP tool **********/	
+	if(profile_level==2){
+		if(!mystricmp(profile_set_string, "default")){
+			pcache2[0]=malloc(sizeof(profile_cache));
+			initcache(pcache2[0],nsets,assoc,bsize);
+		}
+		else{
+			int i=0;
+			if(sscanf(profile_set_string,"%d:%d",&profile_min,&profile_max)!=2)
+					fatal("bad profile cache sets number");
+
+			for(i=0; i<=profile_max-profile_min; i++){
+				pcache2[i]=malloc(sizeof(profile_cache));
+
+				int tmp;
+				tmp=pow(2,profile_min+i);
+				initcache(pcache2[i],tmp,assoc,bsize);
+			}
+		}
+	}
+	/********** Modification	end **********/	
 	}
     }
 
@@ -500,6 +567,8 @@ sim_load_prog(char *fname,		/* program to load */
   /********** Modification for ACAPP tool **********/
   cseq_outfile = fname;
   
+  
+  /********** end **********/ 
   /* load program text and data, set up environment, memory, and regs */
   ld_load_prog(fname, argc, argv, envp, &regs, mem, TRUE);
 
@@ -738,11 +807,86 @@ sim_main(void)
   register int is_write;
   enum md_fault_type fault;
 
-  fprintf(stderr, "sim: ** starting functional simulation w/ caches **\n");
+  //fprintf(stderr, "sim: ** starting functional simulation w/ caches **\n");
 
   /* set up initial default next PC */
   regs.regs_NPC = regs.regs_PC + sizeof(md_inst_t);
 
+  
+ /********** Modification for XAMP **********/	 
+      fprintf(stderr, "sim: ** fast forwarding %d insts **\n", fastfwd_count);
+
+     while (fastfwd_count >0)
+	{
+	  /* maintain $r0 semantics */
+	  regs.regs_R[MD_REG_ZERO] = 0;
+#ifdef TARGET_ALPHA
+	  regs.regs_F.d[MD_REG_ZERO] = 0.0;
+#endif /* TARGET_ALPHA */
+
+	  /* get the next instruction to execute */
+	  MD_FETCH_INST(inst, mem, regs.regs_PC);
+
+	  /* set default reference address */
+	  addr = 0; is_write = FALSE;
+
+	  /* set default fault - none */
+	  fault = md_fault_none;
+
+	  /* decode the instruction */
+	  MD_SET_OPCODE(op, inst);
+
+	  /* execute the instruction */
+	  switch (op)
+	    {
+#define DEFINST(OP,MSK,NAME,OPFORM,RES,FLAGS,O1,O2,I1,I2,I3)		\
+	    case OP:							\
+	      SYMCAT(OP,_IMPL);						\
+	      break;
+#define DEFLINK(OP,MSK,NAME,MASK,SHIFT)					\
+	    case OP:							\
+	      panic("attempted to execute a linking opcode");
+#define CONNECT(OP)
+#undef DECLARE_FAULT
+#define DECLARE_FAULT(FAULT)						\
+	      { fault = (FAULT); break; }
+#include "machine.def"
+	    default:
+	      panic("attempted to execute a bogus opcode");
+	    }
+
+	  if (fault != md_fault_none)
+	    fatal("fault (%d) detected @ 0x%08p", fault, regs.regs_PC);
+
+	  /* update memory access stats */
+	  if (MD_OP_FLAGS(op) & F_MEM)
+	    {
+	      if (MD_OP_FLAGS(op) & F_STORE)
+		is_write = TRUE;
+	    }
+
+	  /* check for DLite debugger entry condition */
+	  if (dlite_check_break(regs.regs_NPC,
+				is_write ? ACCESS_WRITE : ACCESS_READ,
+				addr, sim_num_insn, sim_num_insn))
+	    dlite_main(regs.regs_PC, regs.regs_NPC, sim_num_insn, &regs, mem);
+
+	  /* go to the next instruction */
+	  regs.regs_PC = regs.regs_NPC;
+	  regs.regs_NPC += sizeof(md_inst_t);
+	  --fastfwd_count;
+	
+    }
+
+
+  fprintf(stderr, "sim: ** starting functional simulation w/ caches **\n");
+  
+  
+/********** Modification end **********/ 
+  
+  
+  
+  
   /* check for DLite debugger entry condition */
   if (dlite_check_break(regs.regs_PC, /* no access */0, /* addr */0, 0, 0))
     dlite_main(regs.regs_PC - sizeof(md_inst_t), regs.regs_PC,

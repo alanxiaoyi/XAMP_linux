@@ -289,7 +289,7 @@ Note the predicted cache hierarchy is between the first level cache and the main
 	</model>	
 	
 	<model name="Simplescalar for creating CSQ file" ID="11">
-		<directory name="./simplesim-3.0/sim-outorder"/>
+		<directory name="./simplesim-3.0/sim-cache"/>
 		<inputs>	
 			<input name="too_many" description="please refer to simplescalar document" primary="y"/>		
 		</inputs>

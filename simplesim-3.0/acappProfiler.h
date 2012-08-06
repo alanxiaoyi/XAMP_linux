@@ -1,11 +1,35 @@
+#include <stdio.h>
+#include <math.h>
+#define SCALING_FACTOR 4
+
 char *cseq_outfile;
-void initcache(int numsets, int numassoc, int bsize);
-void printset(int set);
-void extprintset(int set);
-void hitStackShift(int setNum, int hitPoint);
-void exthitStackShift(int setNum, int exthitPoint);
-void missStackShift(int setNum, int tag);
-void extmissStackShift(int setNum, int tag);
-int hitOrMissFunc(int setNum, int tag);
-int exthitOrMissFunc(int setNum, int tag);
-void printCacheStats();
+char *profile_set_string;
+int profile_level;
+int profile_max, profile_min;
+
+
+
+typedef struct
+{
+	int tag;
+	int count;
+} matrix;
+
+typedef struct 
+{
+char cseq_outfile_set[256];
+
+FILE *Fp;
+int hitOrMiss, num_hits, num_misses, hitPoint, nsets, nassoc, cseqrows, nbsize;
+int exthitOrMiss, extnum_hits, extnum_misses, exthitPoint, dmax;
+matrix **cache; 
+matrix **extcache;
+
+int **cseqtable;
+double *weightedAvg;
+int *stackDist;
+
+}profile_cache;
+
+profile_cache* pcache1[10];
+profile_cache* pcache2[10];

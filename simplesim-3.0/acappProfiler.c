@@ -3,8 +3,24 @@
  */
 
 #include "acappProfiler.h"
-#include <stdio.h>
 
+#include "host.h"
+#include "misc.h"
+#include "machine.h"
+#include "cache.h"
+
+void initcache(profile_cache* pc, int numsets, int numassoc, int bsize);
+//void printset(int set);
+void extprintset(profile_cache* pc, int set);
+//void hitStackShift(int setNum, int hitPoint);
+void exthitStackShift(profile_cache* pc, int setNum, int exthitPoint);
+//void missStackShift(int setNum, int tag);
+void extmissStackShift(profile_cache* pc, int setNum, int tag);
+//int hitOrMissFunc(int setNum, int tag);
+int exthitOrMissFunc(profile_cache* pc, md_addr_t addr);
+void printCacheStats(profile_cache* pc );
+void calcWeightedAvg(profile_cache* pc );
+/*
 #define SCALING_FACTOR 4
 extern char *cseq_outfile;
 FILE *Fp;
@@ -22,82 +38,86 @@ matrix **extcache;
 int **cseqtable;
 double *weightedAvg;
 int *stackDist;
-
+*/
 /**
   * This function initialize the cache and sets the size according 
   * to parameters numsets and nummasoc.
   */
-void initcache(int numsets, int numassoc, int bsize)
+void initcache(profile_cache* pc, int numsets, int numassoc, int bsize)
 {
   int i,j;
-  dmax = SCALING_FACTOR * numassoc; //size of columns in cseqtable & assoc of pseudocache
-  printf("Initializing Cache\n");
-  
-  hitOrMiss = 0; 
-  num_hits = 0;
-  num_misses = 0;
-  hitPoint = 0;
+  pc->dmax = SCALING_FACTOR * numassoc; //size of columns in cseqtable & assoc of pseudocache
+  printf("Initializing Cache: sets %d\n", numsets);
+  char integer_string[32];
+  sprintf(integer_string, "%d", numsets);
+  strcpy(pc->cseq_outfile_set,cseq_outfile);
+  strcat(pc->cseq_outfile_set,integer_string);
+  pc->hitOrMiss = 0; 
+  pc->num_hits = 0;
+  pc->num_misses = 0;
+  pc->hitPoint = 0;
 
-  exthitOrMiss = 0; 
-  extnum_hits = 0;
-  extnum_misses = 0;
-  exthitPoint = 0;
+  pc->exthitOrMiss = 0; 
+  pc->extnum_hits = 0;
+  pc->extnum_misses = 0;
+  pc->exthitPoint = 0;
   	  
-  nsets = numsets;	
-  nassoc = numassoc;	
-  nbsize = bsize;
-  cseqrows = 200;
+  pc->nsets = numsets;	
+  pc->nassoc = numassoc;	
+  pc->nbsize = bsize;
+  pc->cseqrows = 200;
   
 
-  extcache = malloc(nsets * sizeof(matrix));
-  cseqtable = malloc(cseqrows * sizeof(int*));			//yw: modify to int*
-  cache = malloc(nsets * sizeof(matrix));
-  weightedAvg = malloc(dmax * sizeof(double));
-  stackDist = malloc((dmax+1) * sizeof(int));
-  for ( i=0; i < nsets; i++ ) {
-    cache[i] = malloc(nassoc * sizeof(matrix));
+  pc->extcache = malloc((pc->nsets) * sizeof(matrix));
+  pc->cseqtable = malloc((pc->cseqrows) * sizeof(int*));			//yw: modify to int*
+  pc->cache = malloc((pc->nsets) * sizeof(matrix));
+  pc->weightedAvg = malloc((pc->dmax) * sizeof(double));
+  pc->stackDist = malloc((pc->dmax+1) * sizeof(int));
+  for ( i=0; i < pc->nsets; i++ ) {
+    pc->cache[i] = malloc((pc->nassoc) * sizeof(matrix));
   }
     
-    for ( i=0; i < nsets; i++ ) {
-    for ( j=0; j < nassoc; j++ ) {
-    	cache[i][j].tag = 0;
-	cache[i][j].count = 0;
+    for ( i=0; i < (pc->nsets); i++ ) {
+    for ( j=0; j < (pc->nassoc); j++ ) {
+    	pc->cache[i][j].tag = 0;
+	pc->cache[i][j].count = 0;
 
   
    	}
    }
   
-  for ( i=0; i < cseqrows; i++ ) {
-    cseqtable[i] = malloc(dmax * sizeof(int));   // yw: modify to dmax
+  for ( i=0; i < pc->cseqrows; i++ ) {
+    pc->cseqtable[i] = malloc((pc->dmax) * sizeof(int));   // yw: modify to dmax
   }
 	
-	for (j = 0; j < cseqrows; j++) {		//yw: add init
-		for (i = 0; i < dmax; i++) {
-			cseqtable[j][i]=0;
+	for (j = 0; j < pc->cseqrows; j++) {		//yw: add init
+		for (i = 0; i < pc->dmax; i++) {
+			pc->cseqtable[j][i]=0;
 		}
 	}
 	
 	
-  for ( i=0; i < nsets; i++ ) {
-    extcache[i] = malloc(dmax * sizeof(matrix));
+  for ( i=0; i < pc->nsets; i++ ) {
+    pc->extcache[i] = malloc((pc->dmax) * sizeof(matrix));
   }  
   
 
    
-    for ( i=0; i < nsets; i++ ) {
-    for ( j=0; j < dmax; j++ ) {
-    	extcache[i][j].tag = 0;
-	extcache[i][j].count = 0;
+    for ( i=0; i < pc->nsets; i++ ) {
+    for ( j=0; j < pc->dmax; j++ ) {
+    	pc->extcache[i][j].tag = 0;
+	pc->extcache[i][j].count = 0;
 
   
    	}
    }
-  printf("Cache Initialization done \n");
+  printf("Cache Initialization done: sets %d \n", numsets);
   
 }
 
 /** Test function that prints the contents of a particular set in the cache
  */
+ /*
 void printset(int set)
 {
 
@@ -116,52 +136,52 @@ void printset(int set)
 	printf("\n");
 		
 
-}
+}*/
 
-void extprintset(int set)
+void extprintset(profile_cache* pc, int set)
 {
 
 	int i;
 	
 	printf("\n");
-	for (i = 0; i < dmax; i++) {
-		printf("%d ",extcache[set][i].tag);
+	for (i = 0; i < pc->dmax; i++) {
+		printf("%d ",pc->extcache[set][i].tag);
 		
 		
 	}
 	printf("\n");
-	for (i = 0; i < dmax; i++) {
-	printf("%d ",extcache[set][i].count);
+	for (i = 0; i < pc->dmax; i++) {
+	printf("%d ",pc->extcache[set][i].count);
 	}	
 	printf("\n");
 		
 
 }
 
-void calcWeightedAvg(){
+void calcWeightedAvg(profile_cache* pc ){
 	int i,n,rSum,weightedSum;
 	
 	
-	for (i = 0; i < dmax; i++){
+	for (i = 0; i < pc->dmax; i++){
 		
 		rSum = 0;
 		weightedSum = 0;
-		for (n = i+1; n < cseqrows; n++) {		//yw: modify n=0 to n=i+1 since n>=d+1
-		weightedSum+= (n+1)*cseqtable[n][i];
-		rSum += cseqtable[n][i];
+		for (n = i+1; n < pc->cseqrows; n++) {		//yw: modify n=0 to n=i+1 since n>=d+1
+		weightedSum+= (n+1)*(pc->cseqtable[n][i]);
+		rSum += (pc->cseqtable[n][i]);
 		
 		}
-		stackDist[i] = rSum; //sum of all values in each d
+		pc->stackDist[i] = rSum; //sum of all values in each d
 		if (rSum != 0)		
-		weightedAvg[i] = (double)((double)weightedSum/(double)rSum);
+		pc->weightedAvg[i] = (double)((double)weightedSum/(double)rSum);
 		
-		else weightedAvg[i] = 0;
+		else pc->weightedAvg[i] = 0;
 		
 		
 		
 	}
 
-stackDist[dmax] = extnum_misses;
+pc->stackDist[pc->dmax] = pc->extnum_misses;
 }
 
 /*
@@ -171,6 +191,7 @@ stackDist[dmax] = extnum_misses;
 /*
  * This function shifs the stack accordingly when a hit occurs - LRU
  */
+ /*
 void hitStackShift(int setNum, int hitPoint)
 {
 
@@ -213,52 +234,54 @@ void hitStackShift(int setNum, int hitPoint)
 	int n = temp.count;
 	cseqtable[n-1][hitPoint]++;
 	*/
-	
+/*	
 }
+*/
 
-void exthitStackShift(int setNum, int exthitPoint)
+void exthitStackShift(profile_cache* pc, int setNum, int exthitPoint)
 {
 
 	matrix temp;
 	int i;
 	
-	extcache[setNum][exthitPoint].count++;
-	temp = extcache[setNum][exthitPoint];
+	pc->extcache[setNum][exthitPoint].count++;
+	temp = pc->extcache[setNum][exthitPoint];
 	
 	if (exthitPoint != 0) 
 	{
 	
-		if (exthitPoint == dmax - 1) //if hit in last assoc # o0f extcache
+		if (exthitPoint == pc->dmax - 1) //if hit in last assoc # o0f extcache
 		{
-			for (i = dmax - 1; i > 0; i--)
+			for (i = pc->dmax - 1; i > 0; i--)
 			{
 			
-				extcache[setNum][i] = extcache[setNum][i-1];
+				pc->extcache[setNum][i] = pc->extcache[setNum][i-1];
 				
 			}
-			extcache[setNum][0] = temp;
+			pc->extcache[setNum][0] = temp;
 		}
 		else 
 		{
 			for (i = exthitPoint; i > 0; i--)
 			{
-				extcache[setNum][i] = extcache[setNum][i-1];
+				pc->extcache[setNum][i] = pc->extcache[setNum][i-1];
 				
 			}
-			extcache[setNum][0] = temp;
+			pc->extcache[setNum][0] = temp;
 			
 		}
 	}
-	extcache[setNum][0].count = 1;
+	pc->extcache[setNum][0].count = 1;
 	
-	for (i = 1; i < dmax; i++)
-		if (extcache[setNum][i].tag != 0)
-		extcache[setNum][i].count++;	
+	for (i = 1; i < pc->dmax; i++)
+		if (pc->extcache[setNum][i].tag != 0)
+		pc->extcache[setNum][i].count++;	
 	
 	int n = temp.count;
-	if(n>cseqrows) n=cseqrows;				//yw: add a check
+	if(n>(pc->cseqrows)) n=pc->cseqrows;				//yw: add a check
 	
-	cseqtable[n-1][exthitPoint]++;
+	pc->cseqtable[n-1][exthitPoint]++;
+//		printf("haha1 set %ld\n", pc->cseqtable[n-1][exthitPoint]);
 //  printf("%d",n);
 //	printf("%d, %d\n", n, exthitPoint);
 	
@@ -267,6 +290,7 @@ void exthitStackShift(int setNum, int exthitPoint)
 /*
  * This function shifts the stack accordingly when a miss occurs - LRU
  */
+ /*
 void missStackShift(int setNum, int tag)
 {
 	int i;
@@ -290,29 +314,29 @@ void missStackShift(int setNum, int tag)
 	}
 	
 }
+*/
 
 
-
-void extmissStackShift(int setNum, int tag)
+void extmissStackShift(profile_cache* pc, int setNum, int tag)
 {
 	int i;
 	
-	for (i = dmax- 1; i >= 0; i--)
+	for (i = pc->dmax- 1; i >= 0; i--)
 	{
-		extcache[setNum][i] = extcache[setNum][i-1];
+		pc->extcache[setNum][i] = pc->extcache[setNum][i-1];
 		
 	
 	}
-	extcache[setNum][0].tag = tag;
-	extcache[setNum][0].count = 1;
+	pc->extcache[setNum][0].tag = tag;
+	pc->extcache[setNum][0].count = 1;
 	
 	
 	
 
 	
-	for (i = 1; i < dmax; i++){
-	if (extcache[setNum][i].tag != 0)
-	extcache[setNum][i].count++;
+	for (i = 1; i < pc->dmax; i++){
+	if (pc->extcache[setNum][i].tag != 0)
+	pc->extcache[setNum][i].count++;
 	}
 	
 }
@@ -320,6 +344,7 @@ void extmissStackShift(int setNum, int tag)
 /*
  * This function determines if a hit or miss has occurred
  */
+ /*
 int hitOrMissFunc(int setNum, int tag)
 {
 	int i;
@@ -358,40 +383,41 @@ int hitOrMissFunc(int setNum, int tag)
 	
 	return hitOrMiss;
 }
-
+*/
 //this method is the entrance from cache.c
-int exthitOrMissFunc(int setNum, int tag)
+int exthitOrMissFunc(profile_cache* pc, md_addr_t addr)
 {
+
 	int i;
-	
-	
-	for (i = 0; i < dmax; i++)
+	int setNum=(addr>>log_base2(pc->nbsize))&(pc->nsets-1);
+	int tag=addr>>(log_base2(pc->nbsize)+log_base2(pc->nsets));	
+	for (i = 0; i < pc->dmax; i++)
 	{
 		//hit
-		if (extcache[setNum][i].tag == tag)
+		if (pc->extcache[setNum][i].tag == tag)
 		{ //	printf("%d  ", i);
-			exthitPoint = i;
-			exthitOrMiss = 1;
+			pc->exthitPoint = i;
+			pc->exthitOrMiss = 1;
 			break;
 		}
 		else {  //miss
-		exthitOrMiss = 0;
+		pc->exthitOrMiss = 0;
 		}
 	
 	}
 	
-	if (exthitOrMiss == 1) {
-		extnum_hits++;
-		exthitStackShift(setNum, exthitPoint);
+	if (pc->exthitOrMiss == 1) {
+		pc->extnum_hits++;
+		exthitStackShift(pc, setNum, pc->exthitPoint);
 		
 	}
 	else {   
-		extnum_misses++;
-		extmissStackShift(setNum, tag);
+		pc->extnum_misses++;
+		extmissStackShift(pc, setNum, tag);
 		
 	}
 	
-	return exthitOrMiss;
+	return pc->exthitOrMiss;
 }
 
 
@@ -400,27 +426,27 @@ int exthitOrMissFunc(int setNum, int tag)
 /**
   * This function prints the L2 cache stats
   */
-void printCacheStats()
+void printCacheStats(profile_cache* pc)
 {
 	double miss_rate, extmiss_rate;
 	int i,j;
 	
-	miss_rate = (double)(num_misses)/(double)(num_hits + num_misses);
-	extmiss_rate = (double)(extnum_misses)/(double)(extnum_hits + extnum_misses);
-	calcWeightedAvg();
+	miss_rate = (double)(pc->num_misses)/(double)(pc->num_hits + pc->num_misses);
+	extmiss_rate = (double)(pc->extnum_misses)/(double)(pc->extnum_hits + pc->extnum_misses);
+	calcWeightedAvg(pc);
 	
 	char cseq_outfile_whole[256];
-	strcpy(cseq_outfile_whole,cseq_outfile);
+	strcpy(cseq_outfile_whole,pc->cseq_outfile_set);
 	strcat(cseq_outfile_whole,"_whole.csq");
-	Fp = fopen(cseq_outfile_whole,"w");
+	pc->Fp = fopen(cseq_outfile_whole,"w");
 	
-	for (j = 0; j < cseqrows; j++) {
-		for (i = 0; i < dmax; i++) {
-		fprintf(Fp, "%d ",cseqtable[j][i]);
+	for (j = 0; j < pc->cseqrows; j++) {
+		for (i = 0; i < pc->dmax; i++) {
+		fprintf(pc->Fp, "%d ",pc->cseqtable[j][i]);
 		}
-		fprintf(Fp, "\n");
+		fprintf(pc->Fp, "\n");
 	} 
-	fclose(Fp);
+	fclose(pc->Fp);
 	
 	//Print to screen
         /*
@@ -451,24 +477,24 @@ void printCacheStats()
 		}
 	*/	
 	//print cseq to file
-	strcat(cseq_outfile,".csq");
-	Fp = fopen(cseq_outfile, "w");
+	strcat(pc->cseq_outfile_set,".csq");
+	pc->Fp = fopen(pc->cseq_outfile_set, "w");
 	
-	fprintf(Fp,"#sets %d\n", nsets);
-	fprintf(Fp,"#assoc %d\n", nassoc);
-	fprintf(Fp,"#scaling_factor %d\n",SCALING_FACTOR);
-	fprintf(Fp,"#block_size %d\n",nbsize);
+	fprintf(pc->Fp,"#sets %d\n", pc->nsets);
+	fprintf(pc->Fp,"#assoc %d\n", pc->nassoc);
+	fprintf(pc->Fp,"#scaling_factor %d\n",SCALING_FACTOR);
+	fprintf(pc->Fp,"#block_size %d\n",pc->nbsize);
 	
-	fprintf(Fp,"\n#cseq\n");
-	for (i = 0; i < dmax; i++){
-		fprintf(Fp,"%.1f ",weightedAvg[i]);
+	fprintf(pc->Fp,"\n#cseq\n");
+	for (i = 0; i < pc->dmax; i++){
+		fprintf(pc->Fp,"%.1f ",pc->weightedAvg[i]);
 		
 	}
-	fprintf(Fp,"\n\n#stackDist\n");
-	for (i = 0; i < dmax+1; i++){
-		fprintf(Fp,"%d ",stackDist[i]);
+	fprintf(pc->Fp,"\n\n#stackDist\n");
+	for (i = 0; i < pc->dmax+1; i++){
+		fprintf(pc->Fp,"%d ",pc->stackDist[i]);
 		
 	}
-	fclose(Fp);
+	fclose(pc->Fp);
 	
 }         

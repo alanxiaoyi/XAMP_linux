@@ -58,6 +58,9 @@
 #include "machine.h"
 #include "cache.h"
 
+/********** Modification for XAMP tool **********/
+#include "cache_ff.h"
+int fastfwd_count;
 /********** Modification for ACAPP tool **********/
 #include "acappProfiler.h"
 
@@ -526,18 +529,35 @@ cache_access(struct cache_t *cp,	/* cache to access */
   struct cache_blk_t *blk, *repl;
   int lat = 0;
   
+  /********** Modification for XAMP tool **********/ 
+  if (fastfwd_count > 0)
+	return lat;
+  
   /********** Modification for ACAPP tool **********/
   /* ACAPP Modification Begin */
-  double dtag = (double)tag;
-  double dset = (double)set;
+//  double dtag = (double)tag;
+//  double dset = (double)set;
 
- 
-  if (strcmp("ul2",cp->name) == 0) {
- 	 
-  int h = hitOrMissFunc(dset, dtag);
-  int e = exthitOrMissFunc(dset, dtag);
-
-    }
+  
+	if(profile_level==2){
+		if (strcmp("ul2",cp->name) == 0) {		 
+	//	int h = hitOrMissFunc(dset, dtag);
+			int i;
+			
+			for(i=0; i<=profile_max-profile_min; i++){	
+				exthitOrMissFunc(pcache2[i],addr);
+			}
+		}
+	}
+	
+    else if(profile_level==1){		
+		if(strcmp("dl1",cp->name)==0) {	
+			int i;
+			for(i=0; i<=profile_max-profile_min; i++){	
+				exthitOrMissFunc(pcache1[i],addr);
+			}	  
+		} 
+	}
   
    /* ACAPP Modification End */
   
