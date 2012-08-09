@@ -305,7 +305,7 @@ Note the predicted cache hierarchy is between the first level cache and the main
 			CSQ file will be created in the same directory with the benchmark.	
 		</user_guide>
 		<defaults>	
-			<default command="-fastfwd 100000 -max:inst 100000 ../../spec2k/FP_lendian/equake/equake.exe < ../../spec2k/FP_lendian/equake/inp.in" description=""/>					
+			<default command="-profile_sets 10:13 -profile_level 1 -fastfwd 50000  -max:inst 100000 ../../spec2k/FP_lendian/mgrid/mgrid.exe < ../../spec2k/FP_lendian/mgrid/mgrid.in" description=""/>					
 		</defaults>	
 	</model>		
 

@@ -1,3 +1,31 @@
+/**************license begin*******************
+
+Copyright (c) 2012, Yan Solihin and Yipeng Wang,
+affiliated with the Department of Electrical and Computer Engineering at North Carolina State University.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met: 
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer. 
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution. 
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+***************license end*********************/
 
 #include <gtk/gtk.h>
 #include "interface.h"
@@ -230,7 +258,7 @@ int call_gui() {
 	textmove->desctext=gtk_label_new("");
 	result_text=gtk_label_new("");
 	gtk_label_set_selectable (GTK_LABEL(result_text), true);
-	headtext=gtk_label_new("This is the GUI model platform. Please use it as 3 steps as below, and also refer to README for more information. Copyright 2012 by Yipeng. All Rights Reserved.");
+	headtext=gtk_label_new("This is the GUI model platform. Please use it as 3 steps as below, and also refer to README for more information. Copyright (c)2012, Yan Solihin and Yipeng Wang. All Rights Reserved.");
 	gtk_widget_set_size_request(  headtext , 700, -1 );
 	gtk_label_set_line_wrap (GTK_LABEL(headtext), true);	
 	combotext=gtk_label_new("Choose model:");
