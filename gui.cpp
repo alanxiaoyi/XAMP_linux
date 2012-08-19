@@ -175,7 +175,8 @@ void cb_cbutton(GtkWidget *widget, GtkWidget * combo) {
 
 				if(result==-8) {
 					if(!parse_config(config_file_name,true/*create new input file or not*/))
-						error_loading_dialog();					 
+						error_loading_dialog();		
+					parse_input_file(input_file_name);
 					
 				}
 				else {

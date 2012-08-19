@@ -15,8 +15,8 @@
 <input name="core_number" value="" description="base line core number , from model [4];  circular profile file path, from model [9]; " />
 <input name="core_area" value="" description="area of each core in CEAs, from model [9]; " />
 <input name="core_frequency" value="" description="processor frequency GHz, from model [9]; " />
-<input name="csqfile2" value="" description="circular profile file 2 path, from model [1]; " />
-<input name="csqfile1" value="" description="circular profile file path, from model [1];  circular profile file path, from model [2];  circular profile or stack distance profile file path, from model [3];  circular profile file path, from model [8]; " />
+<input name="csqfile2" value="./acapp/csq/benchmark2.csq" description="circular profile file 2 path, from model [1]; " />
+<input name="csqfile1" value="./acapp/csq/benchmark1.csq" description="circular profile file path, from model [1];  circular profile file path, from model [2];  circular profile or stack distance profile file path, from model [3];  circular profile file path, from model [8]; " />
 <input name="data_sharing_impact_factor" value="" description="Data sharing impact on miss rates, from model [9]; " />
 <input name="direct_factor" value="" description="factor for direct technique, from model [4]; " />
 <input name="factor_p" value="" description="constant determined by process technology, from model [6]; " />
@@ -33,7 +33,7 @@
 <input name="parameter_a" value="" description="ACS parameter, from model [5]; " />
 <input name="parameter_b" value="" description="ACS parameter, from model [5]; " />
 <input name="pctn" value="" description="contention probability, from model [5]; " />
-<input name="powerlaw_index" value="" description="can use 0.5, from model [4];  , from model [9]; " />
+<input name="powerlaw_index" value="0.5" description="can use 0.5, from model [4];  , from model [9]; " />
 <input name="rpindex" value="" description="replacement policy number, from model [2]; " />
 <input name="shift_amount" value="" description="shift amount, from model [8]; " />
 <input name="thread_number" value="" description="number of threads, from model [5];  number of threads, from model [7]; " />
