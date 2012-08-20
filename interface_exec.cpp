@@ -39,6 +39,7 @@ int call_model(char **);
 int init_model(list<model_class>::iterator , int, string );
 int read_pipe(string, string*, string);
 int parse_cmd(string*);
+int print_model_with_input(string);
 int help();
 list<model_class>::iterator find_model(int);
 int release_mem_pp(char** carg){
@@ -145,6 +146,13 @@ int main(int argc, char *argv[]){
 		for(it=model_list.begin(); it!=model_list.end();it++){
 			if(it->ready==1){
 				cout<<it->num<<". "<<it->name<<endl;
+				int n=0;
+				cout<<"its output can be input of (if any):"<<endl;
+				while(it->output[n][0]!=""){
+					print_model_with_input(it->output[n][0]);
+					n++;
+				}
+				cout<<"\n---------------\n";
 			}
 		}	
 		cout<<"=============================="<<endl;
@@ -170,19 +178,27 @@ int main(int argc, char *argv[]){
 		k=atoi(argv[2]);
 		it=find_model(k);
 		int n=0;
-		cout<<"\ninputs:"<<endl;
-		cout<<"---------------\n";
+		cout<<"\n---------------\n";
+		cout<<"inputs:"<<endl;
 		while(it->input[n][0]!=""){
-			cout<<it->input[n][0]<<": "<<it->input[n][1]<<"     //"<<it->input[n][2]<<endl;
+			cout<<it->input[n][0]<<": "<<it->input[n][1]<<"     //"<<it->input[n][2];
 			n++;			
 		}
+		cout<<"\n---------------\n";
 		cout<<"outputs:"<<endl;
-		cout<<"---------------\n";
 		n=0;
 		while(it->output[n][0]!=""){
 			cout<<it->output[n][0]<<endl;
 			n++;			
 		}
+		n=0;
+		cout<<"---------------\n";
+		cout<<"its output can be input of (if any):"<<endl;
+		while(it->output[n][0]!=""){
+			print_model_with_input(it->output[n][0]);
+			n++;
+		}
+		cout<<endl;
 	}
 		
 	else help();
@@ -505,4 +521,20 @@ model_class::model_class(){
 input_class::input_class(){
 	name="";
 	content="";
+}
+
+
+
+/*find model with the certain input
+*/
+int print_model_with_input(string name){	
+	list<model_class>::iterator iter;	
+	for(iter=model_list.begin(); iter!=model_list.end();iter++){
+		int n=0;
+		while(iter->input[n][0]!=""){
+			if((iter->input[n][0]).find(name)!=-1)
+				cout<<iter->num<<"."<<iter->name<<"; ";
+			n++;
+		}
+	}	
 }

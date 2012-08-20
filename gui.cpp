@@ -147,9 +147,23 @@ void error_loading_dialog(){
 
 /*parse input button
 */
-void cb_ibutton(GtkWidget *widget, gpointer data) {
+void cb_ibutton(GtkWidget *widget, GtkWidget * combo) {
+				list<model_class>::iterator itm;
 				g_print("push parse input button\n"); 
 				parse_input_file(input_file_name);
+			if(combo_count!=0){
+				for(int i=0; i<combo_count; i++)					
+					gtk_combo_box_remove_text (GTK_COMBO_BOX(combo), 0);
+			}
+			combo_count=0;
+			for(itm=model_list.begin(); itm!=model_list.end();itm++){						//init combo box
+				combo_count++;
+				stringstream ss;
+				ss<<itm->num;
+				if(itm->ready==0)
+					gtk_combo_box_append_text(GTK_COMBO_BOX(combo), ((ss.str())+". "+(itm->name)).c_str());
+				else gtk_combo_box_append_text(GTK_COMBO_BOX(combo), ("*"+(ss.str())+". "+(itm->name)).c_str());
+			}				
 } 
 
 /* input deduction button
@@ -157,6 +171,7 @@ void cb_ibutton(GtkWidget *widget, gpointer data) {
 void cb_dbutton(GtkWidget *widget, gpointer data) {
 				g_print("push input deduction button\n"); 
 				input_deduction();
+
 } 
 
 
@@ -192,7 +207,9 @@ void cb_cbutton(GtkWidget *widget, GtkWidget * combo) {
 				combo_count++;
 				stringstream ss;
 				ss<<itm->num;
-				gtk_combo_box_append_text(GTK_COMBO_BOX(combo), ((ss.str())+". "+(itm->name)).c_str());
+				if(itm->ready==0)
+					gtk_combo_box_append_text(GTK_COMBO_BOX(combo), ((ss.str())+". "+(itm->name)).c_str());
+				else gtk_combo_box_append_text(GTK_COMBO_BOX(combo), ("*"+(ss.str())+". "+(itm->name)).c_str());
 			}
 } 
 
@@ -300,7 +317,7 @@ int call_gui() {
 	config_button = gtk_button_new_with_label("Parse config and create new input file");
 	enter_button = gtk_button_new_with_label("Enter");
 	g_signal_connect(G_OBJECT(exit_button), "clicked", G_CALLBACK(cb_qbutton),NULL);
-	g_signal_connect(G_OBJECT(input_button), "clicked", G_CALLBACK(cb_ibutton),NULL);
+	g_signal_connect(G_OBJECT(input_button), "clicked", G_CALLBACK(cb_ibutton),combo);
 	g_signal_connect(G_OBJECT(deduction_button), "clicked", G_CALLBACK(cb_dbutton),NULL);
 	g_signal_connect(G_OBJECT(enter_button), "clicked", G_CALLBACK(cb_ebutton),GTK_ENTRY(textmove->editor));
 	g_signal_connect(G_OBJECT(config_button), "clicked", G_CALLBACK(cb_cbutton),combo);

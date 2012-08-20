@@ -7,7 +7,7 @@
 			<input name="csqfile2" default="./acapp/csq/benchmark2.csq" description="circular profile file 2 path" primary="y"/>
 		</inputs>
 		<outputs>
-			<output name="missrate_interference" description=""/>		
+			<output name="miss_rate" description=""/>		
 		</outputs>
 		<model_description>							
 		On typical CMP, L2 or lower level caches are shared by multiple cores. Cache sharing impacts on threads performance by the impacting 						     
@@ -32,7 +32,7 @@
 			<input name="rpindex" default="" description="replacement policy number" primary="n"/>
 		</inputs>
 		<outputs>
-			<output name="missrate_changerp" description=""/>		
+			<output name="miss_rate" description=""/>		
 		</outputs>
 		<model_description>							
 			This model predicts miss rate under different cache replacement policies and cache sets. The model needs CSQ file of certain benchmark and specified replacement 
@@ -57,7 +57,7 @@
 			<input name="csqfile1" default="" description="circular profile or stack distance profile file path" primary="y"/>
 		</inputs>
 		<outputs>
-			<output name="missrate" description=""/>		
+			<output name="miss_rate" description=""/>		
 		</outputs>
 		<model_description>							
 			This model is used to predicted the missrate when vary cache assicitivity number. It needs CSQ file as input. The format of CSQ file

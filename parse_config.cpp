@@ -124,8 +124,10 @@ int parse_config(const char* a, bool createornot){
 					else if(strcmp(elemt->Value(),"outputs")==0){
 						n=0;
 						for(TiXmlElement * child=elemt->FirstChildElement(); child; child=child->NextSiblingElement()){
-							if(child->Attribute("name")!="")
+							if(child->Attribute("name")!=""){
 								model_list.back().output[n][0]=(string)(child->Attribute("name"));
+								model_list.back().output[n][1]=(string)(child->Attribute("description"));
+							}
 							else {cout<<"empty name in xml!"<<endl; exit(1);}
 							n++;
 						}
@@ -192,6 +194,7 @@ int parse_config(const char* a, bool createornot){
 
 	}
 	cout<<"*parsing over!*"<<endl;
+	check_ready();
 	return 1;
 }
 
