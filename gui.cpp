@@ -30,6 +30,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <gtk/gtk.h>
 #include "interface.h"
 
+extern int find_model_arc(list<string> *input_list, string output);			//from model_arc
+extern list<model_class> allcandidate[LENGTH];								//from model_arc
+
+list<string> input_name_list;
+string output_name;
 
 using namespace std;
 typedef struct{
@@ -39,11 +44,14 @@ GtkWidget *desctext;
 GtkWidget	*editor;
 }textstruct;
 
-GtkWidget *main_window, *result_text; 
+GtkWidget *main_window, *result_text, *second_window; 
+GtkTreeSelection *selection_in, *selection_out;
+GtkWidget *list_text_0, *list_text_1, *list_text_2, *list_text_3; 
+
+
 int combo_count=0;
 list<model_class>::iterator themodel;
 GThread *thread;
-
 /*processing_dialog
 */
 
@@ -113,6 +121,212 @@ GdkPixbuf *create(const gchar * filename)
 void cb_qbutton(GtkWidget *widget, gpointer data) {
 	g_print("push exit_button\n"); 
 	gtk_main_quit(); 
+} 
+
+
+/*add to list
+*/
+void add_to_list(GtkWidget *list, const gchar *str)
+{
+  GtkListStore *store;
+  GtkTreeIter iter;
+
+  store = GTK_LIST_STORE(gtk_tree_view_get_model
+      (GTK_TREE_VIEW(list)));
+
+  gtk_list_store_append(store, &iter);
+  gtk_list_store_set(store, &iter, 0, str, -1);
+}
+
+/*each input selected
+*/
+void  view_selected_in_foreach_func (GtkTreeModel  *model,
+                              GtkTreePath   *path,
+                              GtkTreeIter   *iter,
+                              gpointer       userdata){
+    char *name;
+
+    gtk_tree_model_get (model, iter, 0, &name, -1);
+	string name_s=string(name);
+	input_name_list.push_back(name_s);
+    printf ("%s is selected\n", name);
+}
+
+/*each output selected
+*/
+void   view_selected_out_foreach_func (GtkTreeModel  *model,
+                              GtkTreePath   *path,
+                              GtkTreeIter   *iter,
+                              gpointer       userdata){
+    char *name;
+
+    gtk_tree_model_get (model, iter, 0, &name, -1);
+ 	string name_s=string(name);
+	output_name=name_s;
+    printf ("%s is selected\n", name);
+}
+
+
+/*search arc button
+*/
+void cb_search_button(GtkWidget *widget, gpointer data) {
+	string r[4];
+	 input_name_list.clear();
+	 output_name="";
+	 gtk_tree_selection_selected_foreach(selection_in, view_selected_in_foreach_func, NULL);	
+	 gtk_tree_selection_selected_foreach(selection_out, view_selected_out_foreach_func, NULL);
+	 
+
+	
+	for(int i=0; i<4; i++){
+		allcandidate[i].clear();
+	}
+	
+	if(!input_name_list.empty() && output_name!="");
+	int a = find_model_arc(&input_name_list, output_name);		
+	
+	list<model_class>::iterator it;
+	for(int i=0; i<LENGTH; i++){
+		if(!allcandidate[i].empty()){
+			for(it=allcandidate[i].begin(); it!=allcandidate[i].end(); it++){				
+				r[i]=r[i]+it->name+"\n";	
+			}			
+		}	
+	}
+	cout<<"hahaha"<<r[0]<<endl;
+	gtk_label_set_text(GTK_LABEL(list_text_0),r[0].c_str());
+	gtk_label_set_text(GTK_LABEL(list_text_1),r[1].c_str());
+	gtk_label_set_text(GTK_LABEL(list_text_2),r[2].c_str());
+	gtk_label_set_text(GTK_LABEL(list_text_3),r[3].c_str());	
+
+	
+}
+
+
+
+/*arc button
+*/
+void cb_abutton(GtkWidget *widget, gpointer data) {
+	g_print("push arc_button\n"); 
+	GtkWidget *vbox, *hbox,*hbox_result,*arrow_frame[3], *searching_arc_button;
+	GtkWidget *scrolledwindow_in,*scrolledwindow_out;
+	GtkWidget *arrow[3];
+	
+	for(int i=0; i<3; i++){		
+		arrow_frame[i]=gtk_frame_new ("");	
+		arrow[i]=gtk_arrow_new(GTK_ARROW_RIGHT,GTK_SHADOW_OUT);	
+	}
+	
+	list_text_0=gtk_label_new("");	
+	list_text_1=gtk_label_new("");	
+	list_text_2=gtk_label_new("");	
+	list_text_3=gtk_label_new("");		
+	gtk_label_set_line_wrap( GTK_LABEL( list_text_0), TRUE );
+	gtk_widget_set_size_request(  list_text_0 , 200, 200 );
+	gtk_label_set_line_wrap( GTK_LABEL( list_text_1), TRUE );
+	gtk_widget_set_size_request(  list_text_1 , 200, 200 );
+	gtk_label_set_line_wrap( GTK_LABEL( list_text_2), TRUE );
+	gtk_widget_set_size_request(  list_text_2 , 200, 200 );
+	gtk_label_set_line_wrap( GTK_LABEL( list_text_3), TRUE );
+	gtk_widget_set_size_request(  list_text_3 , 200, 200 );
+
+	
+	
+	scrolledwindow_in = gtk_scrolled_window_new(NULL,NULL);
+	scrolledwindow_out = gtk_scrolled_window_new(NULL,NULL);
+
+	gtk_widget_set_size_request(scrolledwindow_in, 430, 170);		//guide
+	gtk_widget_set_size_request(scrolledwindow_out, 430, 170);		//iotext	
+	
+	
+	
+	vbox = gtk_vbox_new(FALSE, 0);
+	hbox = gtk_hbox_new(FALSE, 0);
+
+	
+	hbox_result = gtk_hbox_new(FALSE, 0);		
+	list<string> output_list;
+	
+	searching_arc_button = gtk_button_new_with_label("Searching");	
+	g_signal_connect(G_OBJECT(searching_arc_button), "clicked", G_CALLBACK(cb_search_button),NULL);
+	
+	list<model_class>::iterator itm;
+	GtkCellRenderer *renderer;
+	GtkTreeViewColumn *column_in, *column_out;
+	GtkListStore *store_in, *store_out;
+	GtkWidget *list_in, *list_out;
+	renderer = gtk_cell_renderer_text_new();
+	
+	column_in = gtk_tree_view_column_new_with_attributes("input list", renderer, "text", 0, NULL);
+	column_out = gtk_tree_view_column_new_with_attributes("output list", renderer, "text", 0, NULL);
+	
+	list_in = gtk_tree_view_new();
+	list_out = gtk_tree_view_new();
+	store_in = gtk_list_store_new(1, G_TYPE_STRING);  
+	store_out = gtk_list_store_new(1, G_TYPE_STRING);  	
+	
+	gtk_tree_view_append_column(GTK_TREE_VIEW(list_in), column_in);
+	gtk_tree_view_append_column(GTK_TREE_VIEW(list_out), column_out);
+ 
+	
+	gtk_tree_view_set_model(GTK_TREE_VIEW(list_in), GTK_TREE_MODEL(store_in));
+	gtk_tree_view_set_model(GTK_TREE_VIEW(list_out), GTK_TREE_MODEL(store_out));
+	selection_in = gtk_tree_view_get_selection(GTK_TREE_VIEW(list_in));
+	selection_out = gtk_tree_view_get_selection(GTK_TREE_VIEW(list_out));
+
+	gtk_tree_selection_set_mode (selection_in, GTK_SELECTION_MULTIPLE);
+	
+	second_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_title(GTK_WINDOW(second_window), "seeking model arc");	
+	gtk_window_set_default_size(GTK_WINDOW(second_window), 900,700); 	
+	gtk_window_set_policy (GTK_WINDOW(second_window), true, true, true);
+	
+	for(itm=model_list.begin(); itm!=model_list.end();itm++){
+		int n=0;
+		while(itm->output[n][0]!=""){
+			output_list.push_back(itm->output[n][0]);
+			n++;
+		}
+	}
+	output_list.sort();
+	output_list.unique();
+	
+
+	list<input_class>::iterator icit;
+	list<string>::iterator sit;
+	for(icit=input_list.begin();icit!=input_list.end();icit++){		
+		add_to_list(list_in, (icit->name).c_str());
+	}
+	for(sit=output_list.begin();sit!=output_list.end();sit++){		
+		add_to_list(list_out, (*sit).c_str());
+	}
+		
+	 gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolledwindow_in),list_in);
+	 gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolledwindow_out),list_out);
+	for(int i=0; i<3; i++){
+		gtk_container_add (GTK_CONTAINER (arrow_frame[i]), arrow[i]);
+	}	
+	gtk_box_pack_start(GTK_BOX(hbox), scrolledwindow_in, TRUE, TRUE, 5);	
+	gtk_box_pack_start(GTK_BOX(hbox), scrolledwindow_out, TRUE, TRUE, 5);	
+	gtk_box_pack_start(GTK_BOX(hbox_result), list_text_0, TRUE, TRUE, 5);
+	gtk_box_pack_start(GTK_BOX(hbox_result), arrow_frame[0], TRUE, TRUE, 5);		
+	gtk_box_pack_start(GTK_BOX(hbox_result), list_text_1, TRUE, TRUE, 5);	
+	gtk_box_pack_start(GTK_BOX(hbox_result), arrow_frame[1], TRUE, TRUE, 5);	
+	gtk_box_pack_start(GTK_BOX(hbox_result), list_text_2, TRUE, TRUE, 5);
+	gtk_box_pack_start(GTK_BOX(hbox_result), arrow_frame[2], TRUE, TRUE, 5);	
+	gtk_box_pack_start(GTK_BOX(hbox_result), list_text_3, TRUE, TRUE, 5);
+	
+	gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 5);	
+	gtk_box_pack_start(GTK_BOX(vbox), searching_arc_button, TRUE, TRUE, 5);	
+	gtk_box_pack_start(GTK_BOX(vbox), hbox_result, TRUE, TRUE, 5);	
+	gtk_container_add(GTK_CONTAINER(second_window), vbox);	
+	
+	int x;
+	int y;
+	gtk_window_get_position(GTK_WINDOW(main_window),&x,&y);
+	
+	gtk_widget_show_all(second_window);	
+	gtk_window_move(GTK_WINDOW(second_window),x,y+50);
 } 
 
 /*enter button
@@ -196,7 +410,8 @@ void cb_cbutton(GtkWidget *widget, GtkWidget * combo) {
 				}
 				else {
 					if(!parse_config(config_file_name,false/*create new input file or not*/))	
-						error_loading_dialog()	;					
+						error_loading_dialog()	;	
+					parse_input_file(input_file_name);						
 				}
 			if(combo_count!=0){
 				for(int i=0; i<combo_count; i++)					
@@ -248,21 +463,22 @@ int call_gui() {
     gdk_threads_init();
 	gtk_init(NULL, NULL);
 	GtkWidget *hbox_head,*hbox1, *hbox2, *hbox3 ,*hbox4,*hbox4_1,*hbox4_2,*hbox_desc, *vbox;
-	GtkWidget *exit_button,*input_button,*deduction_button,*enter_button,*config_button,  *combo,*combotext,*headtext;
+	GtkWidget *arc_button, *exit_button,*input_button,*deduction_button,*enter_button,*config_button,  *combo,*combotext,*headtext;
 	GtkWidget *buttonbox1,*frame0, *frame1, *frame2, *frame3, *frame4, *frame5, *vbox_s3,*vbox_s2;
 	GtkWidget *scrolledwindow1,*scrolledwindow2,*scrolledwindow3,*scrolledwindow4,*scrolledwindow_all;
 	GtkObject *vadjust,*hadjust;
 	textstruct *textmove=g_slice_new(textstruct);
 
 		 
-//	gtk_init(NULL, NULL);
 	main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	g_signal_connect(G_OBJECT(main_window), "destroy", G_CALLBACK(gtk_main_quit), NULL); 
-	gtk_window_set_title(GTK_WINDOW(main_window), "Model Platform"); 
+	gtk_window_set_title(GTK_WINDOW(main_window), "XAMP"); 
 	gtk_window_set_default_size(GTK_WINDOW(main_window), 930,830); 
 	gtk_window_set_policy (GTK_WINDOW(main_window), true, true, true);
 	gtk_window_set_icon(GTK_WINDOW(main_window), create("icon.png"));
 
+	
+	
 	/*combo box
 	*/
 	combo=gtk_combo_box_new_text ();
@@ -313,11 +529,13 @@ int call_gui() {
 	*/
 	exit_button = gtk_button_new_with_label("Exit");
 	input_button = gtk_button_new_with_label("Parse Input File");
+	arc_button = gtk_button_new_with_label("model arc");
 	deduction_button = gtk_button_new_with_label("Input Deduction");
 	config_button = gtk_button_new_with_label("Parse config and create new input file");
 	enter_button = gtk_button_new_with_label("Enter");
 	g_signal_connect(G_OBJECT(exit_button), "clicked", G_CALLBACK(cb_qbutton),NULL);
 	g_signal_connect(G_OBJECT(input_button), "clicked", G_CALLBACK(cb_ibutton),combo);
+	g_signal_connect(G_OBJECT(arc_button), "clicked", G_CALLBACK(cb_abutton),NULL);
 	g_signal_connect(G_OBJECT(deduction_button), "clicked", G_CALLBACK(cb_dbutton),NULL);
 	g_signal_connect(G_OBJECT(enter_button), "clicked", G_CALLBACK(cb_ebutton),GTK_ENTRY(textmove->editor));
 	g_signal_connect(G_OBJECT(config_button), "clicked", G_CALLBACK(cb_cbutton),combo);
@@ -343,6 +561,7 @@ int call_gui() {
 	 gtk_box_pack_start(GTK_BOX(hbox3), enter_button, false, false, 10);
 	 gtk_box_pack_start(GTK_BOX(hbox2), combotext, false, false, 3);
 	 gtk_box_pack_start(GTK_BOX(hbox2), combo, false, false, 10);
+	 gtk_box_pack_start(GTK_BOX(hbox2), arc_button, false, false, 10);
 	 gtk_box_pack_start(GTK_BOX(hbox_desc), textmove->desctext, false, false, 10);
 	 gtk_box_pack_start(GTK_BOX(hbox4_2), textmove->text, false, false, 10);
 	 gtk_box_pack_start(GTK_BOX(hbox4_1), textmove->iotext, false, false, 10);	 
@@ -393,7 +612,7 @@ int call_gui() {
 	
 	gtk_container_add(GTK_CONTAINER(main_window), scrolledwindow_all); 
 	gtk_widget_show_all(main_window); 
-	
+	gtk_window_move(GTK_WINDOW(main_window),100,100);
     gdk_threads_enter();
     gtk_main();
     gdk_threads_leave();

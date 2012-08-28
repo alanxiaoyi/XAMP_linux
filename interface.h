@@ -48,6 +48,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define command_param_num 40
 #define io_num 20
+#define LENGTH 4
+
 using namespace std;
 
 int call_gui();
@@ -63,7 +65,7 @@ public:
 	string name;			 //model name
 	char dir[256];			 //directory path of the model
 	string input[io_num][4];	 //input name, content,  comment, and primaryornot as 4th array
-	string output[io_num][2];	 //output name and content as 2d array
+	string output[io_num][3];	 //output name and content as 3d array
 	string comment;			 //discription of the model
 	string guide;            //user guide of the model
 	string dft[io_num];           //sets of defaults 
@@ -78,6 +80,12 @@ public:
 	string comment;
 	string content;
 };
+
+
+
+
+
+
 extern int init_model(list<model_class>::iterator , int, string );
 extern list<model_class> model_list;
 extern list<input_class> input_list;

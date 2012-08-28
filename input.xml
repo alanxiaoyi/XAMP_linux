@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<input name="BRc GB/s" value="" description="bandwidth requirement of the starting cache, from model [6]; " />
+<input name="BRc,GB/s" value="" description="bandwidth requirement of the starting cache, from model [6]; " />
 <input name="CPI_infinitL2,i" value="" description="thread is CPI when assuming infinit L2 cache, from model [7]; " />
 <input name="CPI_alone,i" value="" description="Thread is CPI when running alone in a CMP system, from model [7]; " />
 <input name="CPIpreL2" value="" description="CPI in the core and L1s, from model [9]; " />
@@ -20,14 +20,15 @@
 <input name="data_sharing_impact_factor" value="" description="Data sharing impact on miss rates, from model [9]; " />
 <input name="direct_factor" value="" description="factor for direct technique, from model [4]; " />
 <input name="factor_p" value="" description="constant determined by process technology, from model [6]; " />
-<input name="first level shared cache size" value="" description="starting level cache size, from model [6]; " />
+<input name="first_level_shared_cache_size" value="" description="starting level cache size, from model [6]; " />
 <input name="fparn" value="" description="fraction of parallel part outside critical section, from model [5]; " />
 <input name="fparc" value="" description="fraction of parallel part inside critical section, from model [5]; " />
 <input name="fs" value="" description="fraction of program that cannot be parallelized, from model [9]; " />
 <input name="hit_latency" value="" description="L2 access time in cycle, from model [9]; " />
 <input name="indirect_factor" value="" description="factor for indirect technique, from model [4]; " />
+<input name="memory_bandwidth,GB/s" value="" description="bandwidth provided by the main memory , from model [6]; " />
 <input name="memory_bandwidth, B/s" value="" description="bandwidth provided by the main memory (Bytes/S), from model [7]; " />
-<input name="memory_bandwidth, GB/s" value="" description="bandwidth provided by the main memory , from model [6];  bandwidth provided by the main memory  GB/s, from model [9]; " />
+<input name="memory_bandwidth, GB/s" value="" description="bandwidth provided by the main memory  GB/s, from model [9]; " />
 <input name="miss_rate" value="" description="thread i&apos;s L2 missrate, from model [7]; " />
 <input name="miss_rate_for_1M cache" value="" description="L2 miss rate for a 1MB L2, from model [9]; " />
 <input name="parameter_a" value="" description="ACS parameter, from model [5]; " />

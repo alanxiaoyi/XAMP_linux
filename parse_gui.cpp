@@ -113,6 +113,7 @@ int parse_config(const char* a, bool createornot){
 							if(child->Attribute("name")!=""){
 								model_list.back().output[n][0]=(string)(child->Attribute("name"));
 								model_list.back().output[n][1]=(string)(child->Attribute("description"));
+								model_list.back().output[n][2]=(string)(child->Attribute("derive"));
 							}
 							else {cout<<"empty name in xml!"<<endl; exit(1);}
 							n++;
