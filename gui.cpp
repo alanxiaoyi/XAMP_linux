@@ -173,7 +173,7 @@ void cb_search_button(GtkWidget *widget, gpointer data) {
 	string r[4];
 	 input_name_list.clear();
 	 output_name="";
-	 gtk_tree_selection_selected_foreach(selection_in, view_selected_in_foreach_func, NULL);	
+	 gtk_tree_selection_selected_foreach(selection_in, view_selected_in_foreach_func, NULL);			
 	 gtk_tree_selection_selected_foreach(selection_out, view_selected_out_foreach_func, NULL);
 	 
 
@@ -188,12 +188,13 @@ void cb_search_button(GtkWidget *widget, gpointer data) {
 	list<model_class>::iterator it;
 	for(int i=0; i<LENGTH; i++){
 		if(!allcandidate[i].empty()){
-			for(it=allcandidate[i].begin(); it!=allcandidate[i].end(); it++){				
-				r[i]=r[i]+it->name+"\n";	
+			for(it=allcandidate[i].begin(); it!=allcandidate[i].end(); it++){		
+				stringstream ss;
+				ss<<it->num;			
+				r[i]=r[i]+ss.str()+". "+it->name+"\n";	
 			}			
 		}	
 	}
-	cout<<"hahaha"<<r[0]<<endl;
 	gtk_label_set_text(GTK_LABEL(list_text_0),r[0].c_str());
 	gtk_label_set_text(GTK_LABEL(list_text_1),r[1].c_str());
 	gtk_label_set_text(GTK_LABEL(list_text_2),r[2].c_str());
@@ -217,6 +218,7 @@ void cb_abutton(GtkWidget *widget, gpointer data) {
 		arrow[i]=gtk_arrow_new(GTK_ARROW_RIGHT,GTK_SHADOW_OUT);	
 	}
 	
+	//4 result text box
 	list_text_0=gtk_label_new("");	
 	list_text_1=gtk_label_new("");	
 	list_text_2=gtk_label_new("");	

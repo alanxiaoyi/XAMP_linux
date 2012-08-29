@@ -8,13 +8,13 @@ list<model_class> allcandidate[LENGTH];
 int find_candidate(string outputs, list<model_class> *candidate, list<string> *input_name_list);
 bool check_dup(model_class a);
 bool input_exist(string s, list<string> *input_name_list);
-
+bool add_mark(string, int);
 
 int find_model_arc(list<string> *input_name_list, string outputs){
 	int rt=1;
 	for(int i=0; i<LENGTH; i++){
 		rt=find_candidate(outputs, &allcandidate[i], input_name_list);
-		if(rt==2 || rt==0) break;
+		if(rt==0) break;
 	}
 	list<model_class>::iterator it;
 
@@ -25,7 +25,8 @@ int find_model_arc(list<string> *input_name_list, string outputs){
 			}
 			cout<<endl;			
 		}	
-	}	
+	}
+	add_mark(outputs, 3);
 	return rt;
 }
 
@@ -51,22 +52,14 @@ int find_candidate(string outputs, list<model_class> *candidate, list<string> *i
 		}
 		if(0==flag){
 			int m=0;
-			while(it->output[m][0]!=""){
-				if(it->output[m][0]==outputs){
-					
-					candidate->push_back(*it);
-					
-					return 2;					
+			while(it->output[m][0]!=""){	
+				istringstream iss(it->output[m][2]);
+				string sub;
+				while(iss){
+					iss>>sub;
+					temp_input_name_list.push_back(sub);	
 				}
-				else{	
-					istringstream iss(it->output[m][2]);
-					string sub;
-					while(iss){
-						iss>>sub;
-						temp_input_name_list.push_back(sub);	
-					}
-					temp_input_name_list.push_back(it->output[m][0]);
-				}
+				temp_input_name_list.push_back(it->output[m][0]);
 				m++;
 			}
 			cout<<"model:"<<it->name<<endl;
@@ -74,8 +67,9 @@ int find_candidate(string outputs, list<model_class> *candidate, list<string> *i
 		}	
 	}
 	if(!temp_input_name_list.empty()){
-		for(iit=temp_input_name_list.begin(); iit!=temp_input_name_list.end(); iit++){		
-			input_name_list->push_back(*iit);
+		for(iit=temp_input_name_list.begin(); iit!=temp_input_name_list.end(); iit++){	
+			if(!input_exist(*iit, input_name_list))
+				input_name_list->push_back(*iit);
 		}
 	}
 	
@@ -108,3 +102,51 @@ bool input_exist(string s, list<string> *input_name_list){
 	}
 	return false;
 }
+
+
+bool add_mark(string name, int level){
+	int n;
+	int m;
+	list<model_class>::iterator it;
+	if(level<0) return false;
+	for(int i=level; i>=0; i--){
+		if(!allcandidate[i].empty()){
+			for(it=allcandidate[i].begin(); it!=allcandidate[i].end(); it++){	
+				
+				m=0;
+				while(it->output[m][0]!=""){
+				
+					if(it->output[m][0]==name){
+						if(it->name.find("*")!=0)
+							it->name="*"+it->name;
+						n=0;
+						while(it->input[n][0]!=""){
+							add_mark(it->input[n][0], i-1);
+							n++;
+						}
+					}
+					else{
+						istringstream iss(it->output[m][2]);
+						string sub;
+						while(iss){
+							iss>>sub;
+							if(sub==name){
+								if(it->name.find("*")!=0)
+									it->name="*"+it->name;
+								n=0;
+								while(it->input[n][0]!=""){
+									add_mark(it->input[n][0], i-1);
+									n++;
+								}
+							}
+							
+						}						
+					}
+					m++;
+				}
+			}
+		}
+	}	
+	return true;
+}
+
