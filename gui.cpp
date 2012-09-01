@@ -247,7 +247,7 @@ void cb_abutton(GtkWidget *widget, gpointer data) {
 
 	
 	hbox_result = gtk_hbox_new(FALSE, 0);		
-	list<string> output_list;
+	list<string> output_treeview_list, input_treeview_list;
 	
 	searching_arc_button = gtk_button_new_with_label("Searching");	
 	g_signal_connect(G_OBJECT(searching_arc_button), "clicked", G_CALLBACK(cb_search_button),NULL);
@@ -282,26 +282,40 @@ void cb_abutton(GtkWidget *widget, gpointer data) {
 	gtk_window_set_title(GTK_WINDOW(second_window), "seeking model arc");	
 	gtk_window_set_default_size(GTK_WINDOW(second_window), 900,700); 	
 	gtk_window_set_policy (GTK_WINDOW(second_window), true, true, true);
-	
+
+
+
+	//fill in the treeview: input list and output list
 	for(itm=model_list.begin(); itm!=model_list.end();itm++){
 		int n=0;
+		int m=0;
 		while(itm->output[n][0]!=""){
-			output_list.push_back(itm->output[n][0]);
+			output_treeview_list.push_back(itm->output[n][0]);
 			n++;
 		}
+		while(itm->input[m][0]!=""){
+			if(itm->input[m][3]=="y"){				
+				input_treeview_list.push_back(itm->input[m][0]);
+			}
+			m++;
+		}
 	}
-	output_list.sort();
-	output_list.unique();
-	
+	output_treeview_list.sort();
+	output_treeview_list.unique();
+	input_treeview_list.sort();
+	input_treeview_list.unique();
 
-	list<input_class>::iterator icit;
 	list<string>::iterator sit;
-	for(icit=input_list.begin();icit!=input_list.end();icit++){		
-		add_to_list(list_in, (icit->name).c_str());
-	}
-	for(sit=output_list.begin();sit!=output_list.end();sit++){		
+
+	for(sit=output_treeview_list.begin();sit!=output_treeview_list.end();sit++){		
 		add_to_list(list_out, (*sit).c_str());
 	}
+	for(sit=input_treeview_list.begin();sit!=input_treeview_list.end();sit++){		
+		add_to_list(list_in, (*sit).c_str());
+	}	
+		
+		
+		
 		
 	 gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolledwindow_in),list_in);
 	 gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolledwindow_out),list_out);

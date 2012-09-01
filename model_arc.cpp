@@ -43,8 +43,7 @@ int find_candidate(string outputs, list<model_class> *candidate, list<string> *i
 		flag=0;
 		n=0;
 		while(it->input[n][0]!=""){
-			if(input_exist(it->input[n][0], input_name_list));
-			else {
+			if(it->input[n][3]=="y" && (!input_exist(it->input[n][0], input_name_list))){
 				flag=1;
 				break;
 			}
