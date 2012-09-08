@@ -1,14 +1,19 @@
 <?xml version="1.0"?>
 <model_list>
-	<model name="miss_rate under interference" ID="1">
+	<model name="ACAPP: cache miss rate under interference" ID="1">
 		<directory name="./acapp/acapp"/>
 		<inputs>
 			<input name="file_csq" default="./acapp/csq/benchmark1.csq" description="circular profile file path" primary="y"/>
 			<input name="file_csq_1" default="./acapp/csq/benchmark2.csq" description="circular profile file 2 path" primary="y"/>
 		</inputs>
 		<outputs>
-			<output name="miss_rate" description="" derive="miss_rate_L1 miss_rate_L2 core_bandwidth,GB/s memory_bandwidth,GB/s"/>		
+			<output name="cache_miss_rate" description="" derive="L1_Dcache_miss_rate L2_Dcache_miss_rate 
+									      core_bandwidth_requirement,GB/s memory_bandwidth_requirement,GB/s
+										memory_bandwidth_requirement,B/s"/>		
 		</outputs>
+		<model_assumption>
+			to be fill
+		</model_assumption>
 		<model_description>							
 		On typical CMP, L2 or lower level caches are shared by multiple cores. Cache sharing impacts on threads performance by the impacting 						     
 		on cache miss rates. This model predicts the original miss rates and the miss rates after 2 threads interfering each other by sharing one cache. CSQ files are needed as input. The format of CSQ file
@@ -25,15 +30,20 @@
 		</defaults>	
 	</model>
 	
-	<model name="miss_rate varying replacement policy" ID="2">
+	<model name="ACAPP: cache missrate model of different replacement policy" ID="2">
 		<directory name="./acapp/acapp"/>
 		<inputs>
 			<input name="file_csq" default="" description="circular profile file path" primary="y"/>
-			<input name="rpindex_acapp" default="" description="replacement policy number" primary="n"/>
+			<input name="acapp_replacement_policy_index" default="" description="replacement policy index number" primary="n"/>
 		</inputs>
 		<outputs>
-			<output name="miss_rate" description="" derive="miss_rate_L1 miss_rate_L2 core_bandwidth,GB/s memory_bandwidth,GB/s"/>		
+			<output name="cache_miss_rate" description="" derive="L1_Dcache_miss_rate L2_Dcache_miss_rate 
+									      core_bandwidth_requirement,GB/s memory_bandwidth_requirement,GB/s
+										memory_bandwidth_requirement,B/s"/>			
 		</outputs>
+		<model_assumption>
+			to be fill
+		</model_assumption>
 		<model_description>							
 			This model predicts miss rate under different cache replacement policies and cache sets. The model needs CSQ file of certain benchmark and specified replacement 
 			policy. The format of CSQ file can be found in ./acapp/csq/*. For the definition of CSQ file please refer to the paper.
@@ -51,14 +61,19 @@
 		</defaults>	
 	</model>
 	
-	<model name="miss_rate varying cache size" ID="3">
+	<model name="ACAPP: cache miss rate of different cache size" ID="3">
 		<directory name="./acapp/acapp"/>
 		<inputs>
 			<input name="file_csq" default="" description="circular profile or stack distance profile file path" primary="y"/>
 		</inputs>
 		<outputs>
-			<output name="miss_rate" description="" derive="miss_rate_L1 miss_rate_L2 core_bandwidth,GB/s memory_bandwidth,GB/s"/>		
+			<output name="cache_miss_rate" description="" derive="L1_Dcache_miss_rate L2_Dcache_miss_rate 
+									      core_bandwidth_requirement,GB/s memory_bandwidth_requirement,GB/s
+										memory_bandwidth_requirement,B/s"/>			
 		</outputs>
+		<model_assumption>
+			to be fill
+		</model_assumption>
 		<model_description>							
 			This model is used to predicted the missrate when vary cache assicitivity number. It needs CSQ file as input. The format of CSQ file
 			can be found in ./acapp/csq/*. For the definition of CSQ file please refer to the paper.
@@ -77,16 +92,19 @@
 		<directory name="./mem/memwall_ex"/>
 		<inputs>
 			<input name="factor_powerlaw_index" default="0.5" description="can use 0.5" primary="n"/>
-			<input name="area_chip" default="" description="base line chip area (in CEAs)" primary="y"/>
-			<input name="number_core" default="" description="base line core number " primary="y"/>
-			<input name="factor_indirect_tech_memwall" default="" description="factor for indirect technique" primary="n"/>
-			<input name="factor_direct_tech_memwall" default="" description="factor for direct technique" primary="n"/>
-			<input name="factor_annual_bwgrowth_memwall" default="" description="bandwidth growth rate per year" primary="n"/>
+			<input name="chip_area" default="" description="base line chip area (in CEAs)" primary="y"/>
+			<input name="core_count" default="" description="base line core number " primary="y"/>
+			<input name="factor_memwall_indirect_tech" default="" description="factor for indirect technique" primary="n"/>
+			<input name="factor_memwall_direct_tech" default="" description="factor for direct technique" primary="n"/>
+			<input name="factor_memwall_annual_bwgrowth" default="" description="bandwidth growth rate per year" primary="n"/>
 			
 		</inputs>
 		<outputs>
-			<output name="number_core_prediction" description="" derive="number_core number_thread"/>		
+			<output name="number_core_prediction" description="" derive="core_count thread_count"/>		
 		</outputs>
+		<model_assumption>
+			assumption 1 ~~
+		</model_assumption>
 		<model_description>							
 			As transistor density continues grow, off-chip memory bandwiidth becomes bottelneck to restrict the future multicore scaling.
 			This model is used to predict the future core number can be supported considering such memory wall limitation. The model needs several inputs including number of
@@ -115,15 +133,20 @@
 			<input name="fraction_parallel_outside_critical_examdahl" default="" description="fparn, fraction of parallel part outside critical section" primary="y"/>
 			<input name="fraction_parallel_inside_critical_examdahl" default="" description="fparc, fraction of parallel part inside critical section" primary="y"/>
 			<input name="probability_contention_examdahl" default="" description="pctn, contention probability" primary="y"/>
-			<input name="number_thread" default="" description="number of threads" primary="y"/>
+			<input name="thread_count" default="" description="number of threads" primary="y"/>
 			<input name="speed_big_core" default="" description="big core speed (small core is 1)" primary="n"/>
-			<input name="factor_ACS_a_examdahl" default="" description="parameter_a, ACS parameter" primary="n"/>
-			<input name="factor_ACS_b_examdahl" default="" description="parameter_b, ACS parameter" primary="n"/>
+			<input name="factor_examdahl_ACS_a" default="" description="parameter_a, ACS parameter" primary="n"/>
+			<input name="factor_examdahl_ACS_b" default="" description="parameter_b, ACS parameter" primary="n"/>
 			
 		</inputs>
 		<outputs>
 			<output name="chip_performance" description="exution time" derive=""/>		
 		</outputs>
+		<model_assumption>
+			Critical sections are entered at random times, simple form of Synchronization, Homogreneous workload on each thread
+			It is an abstract model to predict trend of performance
+
+		</model_assumption>
 		<model_description>							
 			Previous Amdahl's law assumes either completely sequential code or completely parallel code. 
 			This model is an extensed Amdahl's law that considers synchronization of critical sections. User should input critical and uncritical fraction of parallel code, the 
@@ -146,13 +169,17 @@
 			<input name="core_bandwidth,GB/s" default="" description="bandwidth requirement of the starting cache" primary="y"/>
 			<input name="memory_bandwidth,GB/s" default="" description="bandwidth provided by the main memory " primary="y"/>
 			<input name="factor_p_moguls" default="" description="constant determined by process technology" primary="n"/>
-			<input name="cache_size_L1" default="" description="starting level(shared) cache size" primary="y"/>			
+			<input name="cache_size" default="" description="starting level(shared) cache size" primary="y"/>			
 		</inputs>
 		<outputs>
 			<output name="cache_size" description="" derive="cache_size_L1 cache_size_L2 cache_size_L3"/>		
 			<output name="cache_level" description="" derive=""/>		
 			<output name="cache_bandwidth" description="" derive=""/>		
 		</outputs>
+		<model_assumption>
+			α=0.5, cache missrate obey power law, different level of cache implement same technology and policy(same ρ, memory access power approximation
+			no more than 3+1(starting) levels of cache
+		</model_assumption>
 		<model_description>							
 			This model is developed to calculate the optimal cache hierarchy for minimum power consumption. 
 			Notice that user need a starting level cache as the first level cache, the bandwidth requirement of this starting cache, power law index, and off-chip memory bandwidth.
@@ -172,19 +199,25 @@ Note the predicted cache hierarchy is between the first level cache and the main
 		<directory name="./bandwidth/bandwidth_ex"/>
 		<inputs>
 			<input name="number_thread" default="" description="number of threads" primary="y"/>
-			<input name="miss_rate_L2" default="" description="thread i L2 cache missrate" primary="y"/>
+			<input name="miss_rate" default="" description="thread i L2 cache missrate" primary="y"/>
 			<input name="cache_access_frequency,million/s" default="" description="thread i's access frequency (million/s)" primary="y"/>
 			<input name="CPI_infinitL2" default="" description="thread i CPI when assuming infinit L2 cache" primary="y"/>
 			<input name="CPI_alone" default="" description="Thread is CPI when running alone in a CMP system" primary="y"/>
-			<input name="miss_penalty_L2" default="" description="thread i l2 cache miss penalty" primary="y"/>		
+			<input name="miss_penalty" default="" description="thread i l2 cache miss penalty" primary="y"/>		
 			<input name="memory_bandwidth,B/s" default="" description="bandwidth provided by the main memory (Bytes/S)" primary="y"/>		
-			<input name="block_size_L2" default="" description="block size (Bytes)" primary="y"/>			
+			<input name="block_size" default="" description="block size (Bytes)" primary="y"/>			
 		</inputs>
 		<outputs>
 			<output name="Bandwidth_nature_partition" description="" derive=""/>		
 			<output name="Bandwidth_optimal_partition" description="" derive=""/>		
 			<output name="weighted_speedup" description="" derive=""/>		
 		</outputs>
+		<model_assumption>
+			2 level cache, L2 is shared token bucket algorithm with unlimited size
+			only take account cache misses(exludewb, prefetch, and coherent requests), no data-sharing
+			weighted speedup is effective and reasonable
+
+		</model_assumption>
 		<model_description>							
 			This model can calculate the optimal and nature partition of off-chip memory bandwidth among threads. It takes threads' memory access information and outputs 
 			bandwidth partition and weighted speedup. Reported error of weighted speedup: arithmetic mean: 7.2%, geometric mean 5.2%, maximum 18.3%. Error is based on some mixed workload of SPEC06 on certain
@@ -216,6 +249,11 @@ Note the predicted cache hierarchy is between the first level cache and the main
 		<outputs>
 			<output name="context_switch_miss" description="" derive=""/>			
 		</outputs>
+		<model_assumption>
+			Uniform temporal reuse behavior over time and uniform distribution of accesses across cache sets, LRU policy, holes in cache sets are contiguous, holes should be completely shifted out piror to the next context switch, no data-sharing
+			abstracted  shift amount δ can effectively represent the cache perturbation
+
+		</model_assumption>
 		<model_description>							
 			The model predicts cache misses due to context switch. The model assumes a number of shift amount, which represent the cache perturbation caused by context switch. 
 			CSQ file is needed. The format of CSQ file can be found in ./acapp/csq/*. For the definition of CSQ file please refer to the paper.
@@ -233,24 +271,29 @@ Note the predicted cache hierarchy is between the first level cache and the main
 		<directory name="./sharing/sharing_ex"/>
 		<inputs>
 			<input name="CPI_preL2" default="" description="CPI in the core and L1s" primary="y"/>
-			<input name="api_L2" default="" description="L2 accesses per inst " primary="y"/>
+			<input name="api" default="" description="L2 accesses per inst " primary="y"/>
 			<input name="hit_latency" default="" description="L2 access time in cycle" primary="y"/>	
 			<input name="number_core" default="" description="circular profile file path" primary="y"/>
 			<input name="area_chip" default="" description="total area of the chip for cores and cache, in CEAs, 1 CEA equal to 1MB cache area" primary="y"/>
 			<input name="area_core" default="" description="area of each core in CEAs" primary="y"/>	
-			<input name="miss_rate_1M_L2" default="" description="L2 miss rate for a 1MB L2" primary="y"/>
+			<input name="miss_rate_1M" default="" description="L2 miss rate for a 1MB L2" primary="y"/>
 			<input name="factor_powerlaw_index" default="" description="" primary="n"/>
 			<input name="factor_sharing_impact" default="" description="Data sharing impact on miss rates" primary="y"/>	
-			<input name="miss_penalty_L2" default="" description="cache access penalty, in number of cycles" primary="y"/>
+			<input name="miss_penalty" default="" description="L2 cache access penalty, in number of cycles" primary="y"/>
 			<input name="memory_bandwidth,GB/s" default="" description="bandwidth provided by the main memory  GB/s" primary="y"/>
 			<input name="frequency_core" default="" description="processor frequency GHz" primary="y"/>	
-			<input name="block_size_L2" default="" description="block size (Bytes)" primary="y"/>	
+			<input name="block_size" default="" description="L2 cache block size (Bytes)" primary="y"/>	
 			<input name="fraction_serial" default="" description="fraction of program that cannot be parallelized" primary="y"/>				
 		</inputs>
 		<outputs>
 			<output name="CPI_core" description="" derive=""/>	
 			<output name="optimal_core_number" description="" derive="number_core number_thread"/>				
 		</outputs>
+		<model_assumption>
+			Homogeneous cores, same workload run on each core, Private L2 cache per core, single threaded cores, 
+			Cache size range valid for power law
+
+		</model_assumption>
 		<model_description>							
 			In multi-threaded applications, data sharing help improve cache miss rate. The model predictc chip performance that considers data sharing impact;
 			With the assumption of data sharing, the model can predict the best core number for performance given certain core area. Please browse ./sharing/input for inputs
@@ -272,11 +315,19 @@ Note the predicted cache hierarchy is between the first level cache and the main
 	<model name="CACTI" ID="10">
 		<directory name="./cacti/cacti"/>
 		<inputs>	
-			<input name="too_many" default="" description="please refer to CACTI document" primary="y"/>		
+			<input name="cache_size" default="" description="please refer to CACTI document" primary="y"/>	
+			<input name="block_size" default="" description="please refer to CACTI document" primary="y"/>	
+			<input name="assoc_number" default="" description="please refer to CACTI document" primary="y"/>	
+			<input name="tech_node" default="" description="please refer to CACTI document" primary="n"/>	
 		</inputs>
 		<outputs>	
-			<output name="too_many" description="please refer to CACTI document" derive=""/>			
+			<output name="access_time" description="please refer to CACTI document" derive="hit_latency"/>	
+			<output name="random_cycle_time" description="please refer to CACTI document" derive=""/>
+			<output name="cache_area" description="please refer to CACTI document" derive=""/>			
 		</outputs>
+		<model_assumption>
+			to be fill
+		</model_assumption>
 		<model_description>							
 			Please see read me in the CACTI directory.
 		</model_description>
@@ -291,11 +342,17 @@ Note the predicted cache hierarchy is between the first level cache and the main
 	<model name="Simplescalar for creating CSQ file" ID="11">
 		<directory name="./simplesim-3.0/sim-cache"/>
 		<inputs>	
-			<input name="too_many" default="" description="please refer to simplescalar document" primary="y"/>		
+			<input name="benchmark_file" default="" description="please refer to simplescalar document" primary="y"/>
+			<input name="cache_size" default="" description="please refer to simplescalar document" primary="y"/>	
+			<input name="block_size" default="" description="please refer to simplescalar document" primary="y"/>	
+			<input name="assoc_number" default="" description="please refer to simplescalar document" primary="y"/>
 		</inputs>
 		<outputs>	
-			<output name="too_many" description="please refer to simplescalar document" derive=""/>			
+			<output name="file_csq" description="please refer to simplescalar document" derive=""/>			
 		</outputs>
+		<model_assumption>
+			to be fill
+		</model_assumption>
 		<model_description>							
 			Command line:
 			"-fastfwd [instructions skipped] -max:inst [instructions simulated] [binary file path of benchmark]"

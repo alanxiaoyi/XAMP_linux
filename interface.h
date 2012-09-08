@@ -58,6 +58,7 @@ int parse_input_file(const char *);
 int check_ready();
 int construct_menu();
 int input_deduction();
+string check_pool(string pool_name, string tag_name);
 
 class model_class{
 public:
@@ -66,6 +67,7 @@ public:
 	char dir[256];			 //directory path of the model
 	string input[io_num][4];	 //input name, content,  comment, and primaryornot as 4th array
 	string output[io_num][3];	 //output name and content as 3d array
+	string assumption;
 	string comment;			 //discription of the model
 	string guide;            //user guide of the model
 	string dft[io_num];           //sets of defaults 
@@ -92,5 +94,6 @@ extern list<input_class> input_list;
 extern const char* config_file_name;
 extern const char* input_file_name;
 extern int create_input_file(list<input_class> );
+
 
 #endif

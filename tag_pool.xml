@@ -1,0 +1,145 @@
+<?xml version="1.0" ?>
+
+<!-- this tag pool file contains tags that you can pick up from to use as input or output
+tags-->
+
+<!--
+/*********input naming principle*************/
+1. use '_' to seperate words. 
+2. If have unit, please use ',' flowed by the unit.
+3. factor and constant use 'factor' as beginning, followed by section describing the model, followed by the name of the factor.
+4. if no need to distinguish cache level, use general name like "cache_miss_rate"
+5. file path name use 'file' as begin
+6. use '_<number>' like '_1' for distinguishing same factor. Ex. file_csq, and file_csq_1
+8. parameters that specific belong to certain models, use a short desciption, like "acapp_replace_policy".
+9. if too many inputs, and(or) you don't want XAMP to analyze them, please use 'too_many'.
+-->
+
+<input_tag_pool>
+
+	<cache>
+		<tag name="L1_Dcache_miss_rate" description="" />
+		<tag name="L2_Dcache_miss_rate" description="" />
+		<tag name="L1_Icache_miss_rate" description="" />
+		<tag name="L2_Icache_miss_rate" description="" />
+		<tag name="L1_Ucache_miss_rate" description="" />
+		<tag name="L2_Ucache_miss_rate" description="" />
+		<tag name="cache_miss_rate" description="" />
+
+		<tag name="L1_Dcache_miss_penalty" description="" />
+		<tag name="L2_Dcache_miss_penalty" description="" />
+		<tag name="L1_Icache_miss_penalty" description="" />
+		<tag name="L2_Icache_miss_penalty" description="" />
+		<tag name="L1_Ucache_miss_penalty" description="" />
+		<tag name="L2_Ucache_miss_penalty" description="" />
+		<tag name="cache_miss_penalty" description="" />
+
+
+		<tag name="L1_Dcache_api" description=" cache accesses per inst" />
+		<tag name="L2_Dcache_api" description="" />
+		<tag name="L1_Ucache_api"description="" />
+		<tag name="L2_Ucache_api" description="" />
+		<tag name="cache_api" description="" />
+
+											//L2 accesses per inst
+		<tag name="L1_Dcache_block_size" description="" />
+		<tag name="L2_Dcache_block_size" description="" />
+		<tag name="L1_Icache_block_size" description="" />
+		<tag name="L2_Icache_block_size" description="" />
+		<tag name="L1_Ucache_block_size" description="" />
+		<tag name="L2_Ucache_block_size" description="" />
+		<tag name="cache_block_size" description=""/>
+	
+		<tag name="L1_Dcache_assoc_number" description="" />
+		<tag name="L2_Dcache_assoc_number" description="" />
+		<tag name="L1_Icache_assoc_number" description="" />
+		<tag name="L2_Icache_assoc_number" description="" />
+		<tag name="L1_Ucache_assoc_number" description="" />
+		<tag name="L1_Ucache_assoc_number" description="" />
+		<tag name="cache_assoc_number" description="" />
+	
+		<tag name="L1_Dcache_access_frequency,million/s" description="" />
+		<tag name="L2_Dcache_access_frequency,million/s" description="" />
+		<tag name="L1_Icache_access_frequency,million/s" description="" />
+		<tag name="L2_Icache_access_frequency,million/s" description="" />
+		<tag name="L1_Ucache_access_frequency,million/s" description="" />
+		<tag name="L2_Ucache_access_frequency,million/s" description="" />
+		<tag name="cache_access_frequency,million/s" description="" />
+
+		<tag name="L1_Dcache_hit_latency" description="" />
+		<tag name="L2_Dcache_hit_latency" description="" />
+		<tag name="L1_Icache_hit_latency" description="" />
+		<tag name="L2_Icache_hit_latency" description="" />
+		<tag name="L1_Ucache_hit_latency" description="" />
+		<tag name="L2_Ucache_hit_latency" description="" />
+		<tag name="cache_hit_latency" description="" />
+
+
+		<tag name="L1_Dcache_cache_size" description="" />
+		<tag name="L2_Dcache_cache_size" description="" />
+		<tag name="L1_Icache_cache_size" description="" />
+		<tag name="L2_Icache_cache_size" description="" />
+		<tag name="L1_Ucache_cache_size" description="" />
+		<tag name="L2_Ucache_cache_size" description="" />
+		<tag name="cache_cache_size" description="" />
+
+	</cache>
+
+
+	<memory>
+
+		<tag name="memory_bandwidth_requirement,B/s" description="" />
+		<tag name="memory_bandwidth_requirement,GB/s" description="" />
+
+	</memory>
+
+	<core_and_chip_wide>
+		<tag name="core_bandwidth_requirement,GB/s" description="" />
+		<tag name="core_count" description="" />
+		<tag name="thread_count" description="" />
+		<tag name="core_area" description="" />
+		<tag name="chip_area" description="" />
+		<tag name="core_frequency" description="" />
+		<tag name="big_core_speed" description="heterogenious core, the relative speed of the big core" />
+		<tag name="CPI_infinitL2" description="" />
+		<tag name="CPI_alone" description="" />
+		<tag name="CPI_preL2" description="" />
+		<tag name="CPI_core" description="" />
+		<tag name="tech_node,nm" description="" />
+
+	</core_and_chip_wide>
+
+
+	<file_path>
+		<tag name="file_benchmark" description="" />
+		<tag name="file_csq" description="" />
+		<tag name="file_csq_1" description="" />
+	</file_path>
+
+	<factor_or_constant>
+		<tag name="factor_powerlaw_index" description="" />
+		<tag name="factor_moguls_tech" description="" />
+		<tag name="factor_memwall_indirect_tech" description="" />
+		<tag name="factor_memwall_direct_tech" description="" />
+		<tag name="factor_memwall_annual_bwgrowth" description="" />
+		<tag name="factor_impact_sharing" description="sharing impact factor for the data sharing model" />
+		<tag name="factor_examdahl_ACS_a" description="" />
+		<tag name="factor_examdahl_ACS_b" description="" />
+	</factor_or_constant>
+
+
+	<specific_parameters>	
+		<tag name="acapp_replacement_policy_index" description="" />
+		<tag name="contextswitch_shift_amount" description="shift amount in the context switch model " />
+		<tag name="examdahl_probability_contention" description="the probability of contention in extended examdahl's law" />
+		<tag name="examdahl_fraction_parallel_outside_critical" description="" />
+		<tag name="examdahl_fraction_parallel_inside_critical_examdahl" description="" />
+		<tag name="examdahl_fraction_serial" description="" />
+	</specific_parameters>
+
+
+	<others>
+
+		<tag name="too_many" description="if you don't want XAMP to analyze them" />	
+	</others>	
+</input_tag_pool>
