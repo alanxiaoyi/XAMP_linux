@@ -41,7 +41,7 @@ tags-->
 		<tag name="L2_Ucache_api" description="" />
 		<tag name="cache_api" description="" />
 
-											//L2 accesses per inst
+											
 		<tag name="L1_Dcache_block_size" description="" />
 		<tag name="L2_Dcache_block_size" description="" />
 		<tag name="L1_Icache_block_size" description="" />
@@ -101,9 +101,9 @@ tags-->
 		<tag name="chip_area" description="" />
 		<tag name="core_frequency" description="" />
 		<tag name="big_core_speed" description="heterogenious core, the relative speed of the big core" />
-		<tag name="CPI_infinitL2" description="" />
-		<tag name="CPI_alone" description="" />
-		<tag name="CPI_preL2" description="" />
+		<tag name="CPI_infinitL2" description="CPI assuming infinite L2 cache size" />
+		<tag name="CPI_alone" description="CPI of one thread when running alone in a CMP system" />
+		<tag name="CPI_preL2" description="CPI in the core and L1 cache" />
 		<tag name="CPI_core" description="" />
 		<tag name="tech_node,nm" description="" />
 

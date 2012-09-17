@@ -166,8 +166,8 @@
 	<model name="Moguls model" ID="6">
 		<directory name="./moguls/moguls_ex"/>
 		<inputs>
-			<input name="core_bandwidth,GB/s" default="" description="bandwidth requirement of the starting cache" primary="y"/>
-			<input name="memory_bandwidth,GB/s" default="" description="bandwidth provided by the main memory " primary="y"/>
+			<input name="core_bandwidth_requirement,GB/s" default="" description="bandwidth requirement of the starting cache" primary="y"/>
+			<input name="memory_bandwidth_requirement,GB/s" default="" description="bandwidth provided by the main memory " primary="y"/>
 			<input name="factor_p_moguls" default="" description="constant determined by process technology" primary="n"/>
 			<input name="cache_size" default="" description="starting level(shared) cache size" primary="y"/>			
 		</inputs>

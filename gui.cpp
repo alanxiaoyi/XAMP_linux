@@ -303,7 +303,7 @@ string assemble_pipe_cmd(string model_command_tag[][5], int level, string sub){
 					model_command_tag[level][1].replace(model_command_tag[level][1].find("*"), 1, sub);   
 				stringstream ss;
 				ss<<model_num;
-				string a="[/"+model_command_tag[level][2]+"/"+" pipe_from "+ss.str()+" -cmd "+model_command_tag[level][1]+" -ops "+model_command_tag[level][3]+" "+model_command_tag[level][4]+"]";				
+				string a="[/"+model_command_tag[level][2]+"/"+" -pipefrom "+ss.str()+" -cmd "+model_command_tag[level][1]+" -ops "+model_command_tag[level][3]+" "+model_command_tag[level][4]+"]";				
 				return assemble_pipe_cmd(model_command_tag, level+1, a);				
 			}
 			else {

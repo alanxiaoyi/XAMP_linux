@@ -1,54 +1,58 @@
 <?xml version="1.0" ?>
-<core_and_performance>
+<core_and_chip_wide>
     <input name="CPI_infinitL2" value="" description="thread i CPI when assuming infinit L2 cache, from model [7]; " />
     <input name="CPI_alone" value="" description="Thread is CPI when running alone in a CMP system, from model [7]; " />
     <input name="CPI_preL2" value="" description="CPI in the core and L1s, from model [9]; " />
-    <input name="area_chip" value="" description="base line chip area (in CEAs), from model [4];  total area of the chip for cores and cache, in CEAs, 1 CEA equal to 1MB cache area, from model [9]; " />
-    <input name="area_core" value="" description="area of each core in CEAs, from model [9]; " />
-    <input name="frequency_core" value="" description="processor frequency GHz, from model [9]; " />
-    <input name="number_thread" value="" description="number of threads, from model [5];  number of threads, from model [7]; " />
-    <input name="speed_big_core" value="" description="big core speed (small core is 1), from model [5]; " />
-</core_and_performance>
-<cache>
-    <input name="api" value="" description="L2 accesses per inst , from model [9]; " />
-    <input name="assoc_number" value="" description="number of associativity, from model [8];  please refer to CACTI document, from model [10];  please refer to simplescalar document, from model [11]; " />
-    <input name="block_size" value="" description="block size (Bytes), from model [7];  L2 cache block size (Bytes), from model [9];  please refer to CACTI document, from model [10];  please refer to simplescalar document, from model [11]; " />
-    <input name="cache_access_frequency,million/s" value="" description="thread i&apos;s access frequency (million/s), from model [7]; " />
-    <input name="cache_size" value="" description="starting level(shared) cache size, from model [6];  please refer to CACTI document, from model [10];  please refer to simplescalar document, from model [11]; " />
-    <input name="hit_latency" value="" description="L2 access time in cycle, from model [9]; " />
-    <input name="miss_penalty" value="" description="thread i l2 cache miss penalty, from model [7];  L2 cache access penalty, in number of cycles, from model [9]; " />
-</cache>
+    <input name="chip_area" value="" description="base line chip area (in CEAs), from model [4]; " />
+    <input name="core_count" value="" description="base line core number , from model [4]; " />
+    <input name="core_bandwidth_requirement,GB/s" value="" description="bandwidth requirement of the starting cache, from model [6]; " />
+    <input name="thread_count" value="" description="number of threads, from model [5]; " />
+</core_and_chip_wide>
+<specific_parameters>
+    <input name="acapp_replacement_policy_index" value="" description="replacement policy index number, from model [2]; " />
+</specific_parameters>
 <NA>
+    <input name="api" value="" description="L2 accesses per inst , from model [9]; " />
+    <input name="area_chip" value="" description="total area of the chip for cores and cache, in CEAs, 1 CEA equal to 1MB cache area, from model [9]; " />
+    <input name="area_core" value="" description="area of each core in CEAs, from model [9]; " />
+    <input name="assoc_number" value="" description="number of associativity, from model [8];  please refer to CACTI document, from model [10];  please refer to simplescalar document, from model [11]; " />
     <input name="benchmark_file" value="" description="please refer to simplescalar document, from model [11]; " />
+    <input name="block_size" value="" description="block size (Bytes), from model [7];  L2 cache block size (Bytes), from model [9];  please refer to CACTI document, from model [10];  please refer to simplescalar document, from model [11]; " />
+    <input name="cache_size" value="" description="starting level(shared) cache size, from model [6];  please refer to CACTI document, from model [10];  please refer to simplescalar document, from model [11]; " />
     <input name="factor_p_moguls" value="" description="constant determined by process technology, from model [6]; " />
+    <input name="factor_sharing_impact" value="" description="Data sharing impact on miss rates, from model [9]; " />
+    <input name="fraction_parallel_outside_critical_examdahl" value="" description="fparn, fraction of parallel part outside critical section, from model [5]; " />
+    <input name="fraction_parallel_inside_critical_examdahl" value="" description="fparc, fraction of parallel part inside critical section, from model [5]; " />
+    <input name="frequency_core" value="" description="processor frequency GHz, from model [9]; " />
+    <input name="fraction_serial" value="" description="fraction of program that cannot be parallelized, from model [9]; " />
+    <input name="hit_latency" value="" description="L2 access time in cycle, from model [9]; " />
+    <input name="memory_bandwidth,B/s" value="" description="bandwidth provided by the main memory (Bytes/S), from model [7]; " />
+    <input name="memory_bandwidth,GB/s" value="" description="bandwidth provided by the main memory  GB/s, from model [9]; " />
     <input name="miss_rate" value="" description="thread i L2 cache missrate, from model [7]; " />
     <input name="miss_rate_1M" value="" description="L2 miss rate for a 1MB L2, from model [9]; " />
-    <input name="number_core" value="" description="base line core number , from model [4];  circular profile file path, from model [9]; " />
-    <input name="replacement_policy" value="" description="replacement policy index number, from model [2]; " />
+    <input name="miss_penalty" value="" description="thread i l2 cache miss penalty, from model [7];  L2 cache access penalty, in number of cycles, from model [9]; " />
+    <input name="number_thread" value="" description="number of threads, from model [7]; " />
+    <input name="number_core" value="" description="circular profile file path, from model [9]; " />
+    <input name="probability_contention_examdahl" value="" description="pctn, contention probability, from model [5]; " />
+    <input name="shift_amount_context" value="" description="shift amount, from model [8]; " />
+    <input name="speed_big_core" value="" description="big core speed (small core is 1), from model [5]; " />
     <input name="tech_node" value="" description="please refer to CACTI document, from model [10]; " />
 </NA>
-<memory>
-    <input name="core_bandwidth,GB/s" value="" description="bandwidth requirement of the starting cache, from model [6]; " />
-    <input name="memory_bandwidth,B/s" value="" description="bandwidth provided by the main memory (Bytes/S), from model [7]; " />
-    <input name="memory_bandwidth,GB/s" value="" description="bandwidth provided by the main memory , from model [6];  bandwidth provided by the main memory  GB/s, from model [9]; " />
-</memory>
+<cache>
+    <input name="cache_access_frequency,million/s" value="" description="thread i&apos;s access frequency (million/s), from model [7]; " />
+</cache>
 <factor_or_constant>
-    <input name="factor_indirect_tech_memwall" value="" description="factor for indirect technique, from model [4]; " />
-    <input name="factor_direct_tech_memwall" value="" description="factor for direct technique, from model [4]; " />
-    <input name="factor_annual_bwgrowth_memwall" value="" description="bandwidth growth rate per year, from model [4]; " />
-    <input name="factor_ACS_a_examdahl" value="" description="parameter_a, ACS parameter, from model [5]; " />
-    <input name="factor_ACS_b_examdahl" value="" description="parameter_b, ACS parameter, from model [5]; " />
+    <input name="factor_memwall_indirect_tech" value="" description="factor for indirect technique, from model [4]; " />
+    <input name="factor_memwall_direct_tech" value="" description="factor for direct technique, from model [4]; " />
+    <input name="factor_memwall_annual_bwgrowth" value="" description="bandwidth growth rate per year, from model [4]; " />
+    <input name="factor_examdahl_ACS_a" value="" description="parameter_a, ACS parameter, from model [5]; " />
+    <input name="factor_examdahl_ACS_b" value="" description="parameter_b, ACS parameter, from model [5]; " />
     <input name="factor_powerlaw_index" value="0.5" description="can use 0.5, from model [4];  , from model [9]; " />
-    <input name="factor_sharing_impact" value="" description="Data sharing impact on miss rates, from model [9]; " />
 </factor_or_constant>
 <file_path>
     <input name="file_csq_1" value="./acapp/csq/benchmark2.csq" description="circular profile file 2 path, from model [1]; " />
     <input name="file_csq" value="./acapp/csq/benchmark1.csq" description="circular profile file path, from model [1];  circular profile file path, from model [2];  circular profile or stack distance profile file path, from model [3];  circular profile file path, from model [8]; " />
 </file_path>
-<specific_parameters>
-    <input name="fraction_parallel_outside_critical_examdahl" value="" description="fparn, fraction of parallel part outside critical section, from model [5]; " />
-    <input name="fraction_parallel_inside_critical_examdahl" value="" description="fparc, fraction of parallel part inside critical section, from model [5]; " />
-    <input name="fraction_serial" value="" description="fraction of program that cannot be parallelized, from model [9]; " />
-    <input name="probability_contention_examdahl" value="" description="pctn, contention probability, from model [5]; " />
-    <input name="shift_amount_context" value="" description="shift amount, from model [8]; " />
-</specific_parameters>
+<memory>
+    <input name="memory_bandwidth_requirement,GB/s" value="" description="bandwidth provided by the main memory , from model [6]; " />
+</memory>
