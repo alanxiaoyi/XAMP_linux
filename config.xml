@@ -103,7 +103,7 @@
 			<output name="number_core_prediction" description="" derive="core_count thread_count"/>		
 		</outputs>
 		<model_assumption>
-			assumption 1 ~~
+			1. Homogeneous cores, 2. single-threaded cores, 3. there are always threads to run on cores, 4. work-load characteristics remain constant over 				time
 		</model_assumption>
 		<model_description>							
 			As transistor density continues grow, off-chip memory bandwiidth becomes bottelneck to restrict the future multicore scaling.
