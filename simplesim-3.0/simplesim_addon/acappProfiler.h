@@ -6,8 +6,9 @@ char *cseq_outfile;
 char *profile_set_string;
 int profile_level;
 int profile_max, profile_min;
-
-
+int warmup;
+char *trace_outfile;
+FILE *TF;
 
 typedef struct
 {

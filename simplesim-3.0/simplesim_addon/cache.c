@@ -536,11 +536,23 @@ cache_access(struct cache_t *cp,	/* cache to access */
   /********** Modification for ACAPP tool **********/
   /* ACAPP Modification Begin */
 //  double dtag = (double)tag;
-//  double dset = (double)set;
+//  double dset = (double)set;	
 
+	if(strcmp("dl1",cp->name)==0 && trace_outfile!=NULL){
+
+		if(cmd==Write){
+			fprintf(TF, "w 0x%llx \n",addr);	
+		
+		}
+		else 
+			fprintf(TF, "R 0x%llx \n",addr);
   
+	}
+
+
 	if(profile_level==2){
-		if (strcmp("ul2",cp->name) == 0) {		 
+		if (strcmp("ul2",cp->name) == 0) {
+ 
 	//	int h = hitOrMissFunc(dset, dtag);
 			int i;
 			
@@ -552,6 +564,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
 	
     else if(profile_level==1){		
 		if(strcmp("dl1",cp->name)==0) {	
+
 			int i;
 			for(i=0; i<=profile_max-profile_min; i++){	
 				exthitOrMissFunc(pcache1[i],addr);

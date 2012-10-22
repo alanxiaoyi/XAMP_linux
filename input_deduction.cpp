@@ -62,8 +62,8 @@ For example, i2i[0][0] is the destination(power law index a)
 of the deduction. This deduction needs one source: csqfile path.
 Put destination in i2i[n][0], sources follow behind*/ 
 
-	i2i[0][0]="powerlaw_index";			//dest
-	i2i[0][1]="csqfile1";				//source
+	i2i[0][0]="factor_powerlaw_index";			//dest
+	i2i[0][1]="file_csq";				//source
 
 	
 	i2i[1][0]="CPI_infinitL2,i";		//dest

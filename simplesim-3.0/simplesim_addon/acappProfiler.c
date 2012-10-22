@@ -111,6 +111,14 @@ void initcache(profile_cache* pc, int numsets, int numassoc, int bsize)
   
    	}
    }
+
+
+if(trace_outfile!=NULL){
+	printf("trace file output to %s \n", trace_outfile);
+	TF = fopen(trace_outfile,"w");
+}
+  
+
   printf("Cache Initialization done: sets %d \n", numsets);
   
 }
@@ -243,8 +251,9 @@ void exthitStackShift(profile_cache* pc, int setNum, int exthitPoint)
 
 	matrix temp;
 	int i;
-	
+
 	pc->extcache[setNum][exthitPoint].count++;
+
 	temp = pc->extcache[setNum][exthitPoint];
 	
 	if (exthitPoint != 0) 
@@ -279,8 +288,8 @@ void exthitStackShift(profile_cache* pc, int setNum, int exthitPoint)
 	
 	int n = temp.count;
 	if(n>(pc->cseqrows)) n=pc->cseqrows;				//yw: add a check
-	
-	pc->cseqtable[n-1][exthitPoint]++;
+	if(warmup<=0)
+		pc->cseqtable[n-1][exthitPoint]++;
 //  printf("%d",n);
 //	printf("%d, %d\n", n, exthitPoint);
 	
@@ -406,12 +415,14 @@ int exthitOrMissFunc(profile_cache* pc, md_addr_t addr)
 	}
 	
 	if (pc->exthitOrMiss == 1) {
-		pc->extnum_hits++;
+		if(warmup<=0)
+			pc->extnum_hits++;
 		exthitStackShift(pc, setNum, pc->exthitPoint);
 		
 	}
 	else {   
-		pc->extnum_misses++;
+		if(warmup<=0)
+			pc->extnum_misses++;
 		extmissStackShift(pc, setNum, tag);
 		
 	}
@@ -495,5 +506,7 @@ void printCacheStats(profile_cache* pc)
 		
 	}
 	fclose(pc->Fp);
+if(trace_outfile!=NULL)
+	fclose(TF);
 	
 }         

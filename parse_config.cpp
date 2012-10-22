@@ -41,6 +41,8 @@ bool compare_input(input_class a, input_class b) {
 	else return flag2;
 }
 
+/*create input file
+*/
 int create_input_file(list<input_class> input_list){
 	
 	list<input_class>::iterator its;	
@@ -113,6 +115,7 @@ int parse_config(const char* a, bool createornot){
 							if(child->Attribute("name")!="")
 								model_list.back().input[n][0]=(string)(child->Attribute("name"));
 							else {cout<<"empty name in xml!"<<endl; exit(1);}
+							model_list.back().input[n][1]=(string)(child->Attribute("default"));
 							model_list.back().input[n][2]=(string)(child->Attribute("description"))+", from model ["+model->Attribute("ID")+"]; ";
 							model_list.back().input[n][3]=(string)(child->Attribute("primary"));
 							n++;
@@ -121,8 +124,10 @@ int parse_config(const char* a, bool createornot){
 					else if(strcmp(elemt->Value(),"outputs")==0){
 						n=0;
 						for(TiXmlElement * child=elemt->FirstChildElement(); child; child=child->NextSiblingElement()){
-							if(child->Attribute("name")!="")
+							if(child->Attribute("name")!=""){
 								model_list.back().output[n][0]=(string)(child->Attribute("name"));
+								model_list.back().output[n][1]=(string)(child->Attribute("description"));
+							}
 							else {cout<<"empty name in xml!"<<endl; exit(1);}
 							n++;
 						}
@@ -160,11 +165,16 @@ int parse_config(const char* a, bool createornot){
 			while(it->input[n][0]!=""){
 				input_class newinput_t; 
 				newinput_t.name=it->input[n][0];
+				if(it->input[n][1]!=""){
+					newinput_t.content=it->input[n][1];
+				}
 				if(it->input[n][2]!=""){
 					newinput_t.comment=it->input[n][2];
 				}
 				for(its=input_list_t.begin(); its!=input_list_t.end();its++){       //search for duplicated one, then combine the comments and erase it
 					if(its->name==it->input[n][0]){
+						if(its->content!="" && it->input[n][1]=="")					//default value
+							newinput_t.content=its->content;
 						newinput_t.comment=its->comment+" "+newinput_t.comment;	
 						its=input_list_t.erase(its);
 					}		
@@ -184,6 +194,7 @@ int parse_config(const char* a, bool createornot){
 
 	}
 	cout<<"*parsing over!*"<<endl;
+	check_ready();
 	return 1;
 }
 

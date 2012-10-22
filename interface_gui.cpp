@@ -341,6 +341,7 @@ model_class::model_class(){
 		num=0;
 		comment="";
 		guide="";
+		assumption="";
 		for(int i=0; i<io_num; i++){
 			input[i][0]="";
 			input[i][1]="";
@@ -348,6 +349,7 @@ model_class::model_class(){
 			input[i][3]="";
 			output[i][0]="";
 			output[i][1]="";
+			output[i][2]="";
 			dft[i]="";
 			
 		}

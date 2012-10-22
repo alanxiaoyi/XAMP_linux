@@ -2,7 +2,7 @@ CXX					:= g++
 CXXFLAG_CMD			:= -g 
 CXXFLAG_GUI			:= -g `pkg-config gtk+-2.0 --cflags --libs` -lgthread-2.0
 OBJ_interface 		:=interface_exec.o menu_struct.o parse_config.o input_deduction.o 
-OBJ_interface_gui   :=gui.o  parse_gui.o interface_gui.o input_deduction.o
+OBJ_interface_gui   :=gui.o  parse_gui.o interface_gui.o input_deduction.o model_arc.o
 OBJ_tinyxml			:=tinyxml.o tinyxmlerror.o tinyxmlparser.o tinystr.o
 
 ifdef NO_GUI

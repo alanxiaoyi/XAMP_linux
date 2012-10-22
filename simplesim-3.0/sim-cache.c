@@ -333,7 +333,14 @@ sim_reg_options(struct opt_odb_t *odb)	/* options database */
 		      /* !print */FALSE, /* format */NULL, /* accrue */TRUE);
 			  
 			  
-/********** Modification for XAMP **********/			  
+/********** Modification for XAMP **********/	
+ opt_reg_int(odb, "-warmup", "number of insts to warmup cache",
+		&warmup, /* default */0, TRUE, NULL);
+
+ opt_reg_string(odb, "-trace", "name of trace that output which can be used by WEST profiler",
+		&trace_outfile, /* default */0, TRUE, NULL);
+
+		  
  opt_reg_int(odb, "-fastfwd", "number of insts skipped before timing starts",
 	      &fastfwd_count, /* default */0,
 	      /* print */TRUE, /* format */NULL);
@@ -360,6 +367,9 @@ sim_check_options(struct opt_odb_t *odb,	/* options database */
 /********** Modification for XAMP **********/	
   if (fastfwd_count < 0 || fastfwd_count >= 2147483647)
     fatal("bad fast forward count: %d", fastfwd_count);
+
+  if (warmup < 0 || warmup >= 2147483647)
+    fatal("bad fast forward count: %d", warmup);
 /********** Modification end **********/
 	
   /* use a level 1 D-cache? */
@@ -874,7 +884,8 @@ sim_main(void)
 	  /* go to the next instruction */
 	  regs.regs_PC = regs.regs_NPC;
 	  regs.regs_NPC += sizeof(md_inst_t);
-	  --fastfwd_count;
+	  if(fastfwd_count>0)
+	 	 --fastfwd_count;
 	
     }
 
@@ -910,8 +921,16 @@ sim_main(void)
       MD_FETCH_INST(inst, mem, regs.regs_PC);
 
       /* keep an instruction count */
+
       sim_num_insn++;
 
+/***********modified for XAMP**************/
+
+	if(warmup>0){
+		warmup--;
+	}
+
+/***********modification end***************/
       /* set default reference address and access mode */
       addr = 0; is_write = FALSE;
 

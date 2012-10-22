@@ -48,6 +48,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define command_param_num 40
 #define io_num 20
+#define LENGTH 4
+#define uml_text_file "./UML/xamp_generated_uml_textfile"
+#define uml_graph_file "./UML/xamp_uml_graph.png"
+#define yuml "./UML/yuml"
+
 using namespace std;
 
 int call_gui();
@@ -56,6 +61,7 @@ int parse_input_file(const char *);
 int check_ready();
 int construct_menu();
 int input_deduction();
+string check_pool(string pool_name, string tag_name);
 
 class model_class{
 public:
@@ -63,7 +69,8 @@ public:
 	string name;			 //model name
 	char dir[256];			 //directory path of the model
 	string input[io_num][4];	 //input name, content,  comment, and primaryornot as 4th array
-	string output[io_num][2];	 //output name and content as 2d array
+	string output[io_num][3];	 //output name and content as 3d array
+	string assumption;
 	string comment;			 //discription of the model
 	string guide;            //user guide of the model
 	string dft[io_num];           //sets of defaults 
@@ -78,11 +85,18 @@ public:
 	string comment;
 	string content;
 };
+
+
+
+
+
+
 extern int init_model(list<model_class>::iterator , int, string );
 extern list<model_class> model_list;
 extern list<input_class> input_list;
 extern const char* config_file_name;
 extern const char* input_file_name;
 extern int create_input_file(list<input_class> );
+
 
 #endif

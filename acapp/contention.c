@@ -10,6 +10,7 @@ void printDetails(char *cseq1, char *cseq2){
 	printf("\n                     \t %s \t %s ",cseq1,cseq2);
 	printf("\nAccesses:\t\t %d \t\t\t %d", sum_b1, sum_b2);
 	printf("\nPredicted miss rate: \t %f \t\t\t %f",(double)(stat_err_prob_b1)/(double)(sum_b1),(double)(stat_err_prob_b2)/(double)(sum_b2));
+	printf("\n%ld, %ld, %ld, %ld", stat_err_prob_b1, sum_b1, stat_err_prob_b2, sum_b2);
 	printf("\nOriginal miss rate: \t %f \t\t\t %f\n",(double)(stackDist1[nassoc])/(double)(sum_b1),(double)(stackDist2[nassoc])/(double)(sum_b2));
 }
 
@@ -46,24 +47,25 @@ double prob_seq_distinct_iterate(int k,int m,int n,int index,int N)
 
 	if (m<n)
 	{
-		return 0;
+		ret= 0;
 	} else if (k==N)
 	{
-		return 1;
+		ret= 1;
 	} else if (k==0)
 	{
 		return prob_seq_distinct_iterate(1, m-1, n-1, index, N);
 	} else
 	{
 		ret=prob_left(k,index)*prob_seq_distinct_iterate(k, m-1, n, index, N)+(1-prob_left(k,index))*prob_seq_distinct_iterate(k+1, m-1, n-1, index, N);
+
 	}
 
 	if (k==1)
 	{
 		//when rollback here. current m and n are m-1 and n-1
 		prob_distinct_array[m+1][n+1]=ret;
-		return ret;
 	}
+	return ret;
 
 }
 
