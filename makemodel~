@@ -1,0 +1,24 @@
+#!/bin/bash
+
+
+
+
+for dir in *
+do
+	if [ -d "$dir" ] ;	then
+		if [ "$1" = "clean" ] 
+		then
+			cd $dir
+			if [ -e "./Makefile" ] ; then
+				make clean
+			fi
+			cd ..
+		else 
+			cd $dir
+			if [ -e "./Makefile" ] ; then			
+				make
+			fi
+			cd ..
+		fi
+	fi
+done
