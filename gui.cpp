@@ -31,9 +31,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "interface.h"
 
 
-extern int find_model_arc(list<string>*, string);			//from model_arc
-extern int reverse_find_model_arc(list<string>*);			//from model_arc
-extern int forward_find_model_arc(list<string>*);			//from model_arc
+extern int find_model_arc(list<string>*, string, int);			//from model_arc
+extern int reverse_find_model_arc(list<string>*,int);			//from model_arc
+extern int forward_find_model_arc(list<string>*,int);			//from model_arc
 extern list<model_class> allcandidate[LENGTH];								//from model_arc
 
 int call_yuml();
@@ -58,7 +58,7 @@ textstruct *textmove;
 GtkWidget *main_window, *result_text, *second_window, *uml_window; 
 GtkTreeSelection *selection_in, *selection_out;
 GtkTreeSelection *selection_result[4];
-GtkWidget *list_result[4],*comment_text,*assumption_text;			//text boxes for second window
+GtkWidget *list_result[4],*comment_text,*assumption_text, *io_text;			//text boxes for second window
 GtkListStore *store_result[4];
 GtkWidget *combo_iobase, *combo_depth;
 GtkWidget *command_box[4], *tag_box[4];
@@ -242,6 +242,31 @@ void   view_selected_out_foreach_func (GtkTreeModel  *model,
 	output_name=name_s;
     printf ("%s is selected\n", name);
 }
+
+
+/*get input output information string*/
+string get_ioinfo_string(list<model_class>::iterator itm){
+
+	string tmp;
+	int n=0;
+	tmp="input: \n\n";
+	while(itm->input[n][0]!=""){
+		tmp=tmp+itm->input[n][0]+": "+itm->input[n][1]+"\t\t//"+itm->input[n][2]+"\n";
+		n++;			
+	}
+		n=0;
+		tmp=tmp+"\n\noutput: \n\n";
+	while(itm->output[n][0]!=""){
+		tmp=tmp+itm->output[n][0]+"\t// can derive out: "+itm->output[n][2]+"\t\t//"+itm->output[n][1]+"\n";
+		n++;
+			
+	}
+
+	return tmp;
+}
+
+
+
 /*model select callback
 */
 void tree_selection_changed_cb (GtkTreeSelection *selection, gpointer data)
@@ -249,7 +274,8 @@ void tree_selection_changed_cb (GtkTreeSelection *selection, gpointer data)
         GtkTreeIter iter;
         GtkTreeModel *model;
         char *name;
-		list<model_class>::iterator it;
+	string tmp;
+	list<model_class>::iterator it;
 
         if (gtk_tree_selection_get_selected (selection, &model, &iter))
         {
@@ -259,13 +285,37 @@ void tree_selection_changed_cb (GtkTreeSelection *selection, gpointer data)
 					name_s=name_s.substr(1,-1);				
                 cout<<"you select "<<name_s<<endl;
 				for(it=model_list.begin(); it!=model_list.end(); it++){
-					if(it->name==name_s){
+					if(it->name==name_s){					//find the model by name
 							gtk_label_set_text(GTK_LABEL(comment_text),("Description:\n"+it->comment).c_str());	
-							gtk_label_set_text(GTK_LABEL(assumption_text),("Assumption:\n"+it->assumption).c_str());	
+							gtk_label_set_text(GTK_LABEL(assumption_text),("Assumption:\n"+it->assumption).c_str());
+							gtk_label_set_text(GTK_LABEL(io_text),get_ioinfo_string(it).c_str());
+	
 					}
 	
 				}
         }			
+}
+
+
+/*wrap the topology figure window*/
+void wrap_topology_window(){
+
+
+	GtkWidget *scrolled_image;
+	scrolled_image= gtk_scrolled_window_new(NULL,NULL);
+
+	uml_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_title(GTK_WINDOW(uml_window), "UML");	
+	gtk_window_set_default_size(GTK_WINDOW(uml_window), 1300,700); 	
+	gtk_window_set_policy (GTK_WINDOW(uml_window), true, true, true);
+
+	GtkWidget *image;
+	image = gtk_image_new_from_file (uml_graph_file);
+
+	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolled_image),image);	
+	gtk_container_add(GTK_CONTAINER(uml_window), scrolled_image);
+	gtk_widget_show_all(uml_window);
+
 }
 
 /*search arc button
@@ -282,30 +332,30 @@ void cb_search_button(GtkWidget *widget, gpointer data) {
 	 gtk_tree_selection_selected_foreach(selection_in, view_selected_in_foreach_func, NULL);			
 	 gtk_tree_selection_selected_foreach(selection_out, view_selected_out_foreach_func, NULL);
 	 
-
+	int temp_depth=gtk_combo_box_get_active (GTK_COMBO_BOX(combo_depth));		// the depth to search
 	
-	for(int i=0; i<4; i++){
+	for(int i=0; i<LENGTH; i++){
 		allcandidate[i].clear();
 	}
 	
 	if(!input_name_list.empty() &&	gtk_combo_box_get_active (GTK_COMBO_BOX(combo_iobase))==0)
-		int a = find_model_arc(&input_name_list, output_name);	
+		int a = find_model_arc(&input_name_list, output_name, temp_depth);	
 
 	else if( !input_name_list.empty()  &&	gtk_combo_box_get_active (GTK_COMBO_BOX(combo_iobase))==1){
-		int a = forward_find_model_arc(&input_name_list);
+		int a = forward_find_model_arc(&input_name_list,temp_depth);
 	}
 	
 	else if( output_name!="" &&	gtk_combo_box_get_active (GTK_COMBO_BOX(combo_iobase))==2){
 		output_name_list.push_back(output_name);
-		int a = reverse_find_model_arc(&output_name_list);
+		int a = reverse_find_model_arc(&output_name_list,temp_depth);
 	}
 	
-	int temp_depth=gtk_combo_box_get_active (GTK_COMBO_BOX(combo_depth));
+
 		
 	list<model_class>::iterator it;
 	
 //	if(gtk_combo_box_get_active (GTK_COMBO_BOX(combo_iobase))==0){				//input/output based
-		for(int i=0; i<temp_depth+1; i++){
+		for(int i=0; i<LENGTH; i++){
 			if(!allcandidate[i].empty()){
 				for(it=allcandidate[i].begin(); it!=allcandidate[i].end(); it++){		
 					stringstream ss;
@@ -342,24 +392,23 @@ void cb_search_button(GtkWidget *widget, gpointer data) {
 
 	}*/
 
-	call_yuml();	
+
+
+	GtkWidget *dialog = gtk_message_dialog_new (GTK_WINDOW(second_window),
+        			GTK_DIALOG_DESTROY_WITH_PARENT,
+       				 GTK_MESSAGE_QUESTION,
+       				 GTK_BUTTONS_YES_NO,
+                                 "A textual UML file descripting the topology is created in sub directory /UML/.\n Do you want XAMP to send it to yUML server(yUML.me) to automatically generate a UML figure?");
+				gint result = gtk_dialog_run (GTK_DIALOG (dialog));				//get the user's choice
+				gtk_widget_destroy (dialog);
+
+	if(result==-8) {
+		
+		call_yuml();	
+		wrap_topology_window();
 	
-	GtkWidget *scrolled_image;
-	scrolled_image= gtk_scrolled_window_new(NULL,NULL);
-
-	uml_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_title(GTK_WINDOW(uml_window), "UML");	
-	gtk_window_set_default_size(GTK_WINDOW(uml_window), 1300,700); 	
-	gtk_window_set_policy (GTK_WINDOW(uml_window), true, true, true);
-
-	GtkWidget *image;
-	image = gtk_image_new_from_file (uml_graph_file);
-
-	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolled_image),image);	
-	gtk_container_add(GTK_CONTAINER(uml_window), scrolled_image);
-	gtk_widget_show_all(uml_window);	
-
-
+	}
+	
 }
 
 /*assemble pipe command
@@ -477,7 +526,7 @@ void cb_pipe_button(GtkWidget *widget, gpointer data) {
 void cb_abutton(GtkWidget *widget, gpointer data) {
 	g_print("push arc_button\n"); 
 	GtkWidget *vbox_combo,*vbox, *hbox,*hbox_desc_assum,*hbox_result,*arrow_frame[3], *searching_arc_button;
-	GtkWidget *scrolled_text,*scrolled_assum_text, *scrolledwindow_in,*scrolledwindow_out, *scrolled_result[4];
+	GtkWidget *scrolled_text,*scrolled_assum_text, *scrolled_io_text, *scrolledwindow_in,*scrolledwindow_out, *scrolled_result[4];
 	GtkWidget *arrow[3];
 	GtkWidget *hbox_command;
 	GtkWidget *pipe_button;
@@ -509,13 +558,20 @@ void cb_abutton(GtkWidget *widget, gpointer data) {
 	//comment box
 	comment_text=gtk_label_new("");
 	assumption_text=gtk_label_new("");
+	io_text=gtk_label_new("");
 	
 	scrolled_text= gtk_scrolled_window_new(NULL,NULL);
-	gtk_widget_set_size_request(scrolled_text, 350, 170);		
+	gtk_widget_set_size_request(scrolled_text, 600, 170);		
 	scrolled_assum_text= gtk_scrolled_window_new(NULL,NULL);
-	gtk_widget_set_size_request(scrolled_assum_text, 350, 170);		
+	gtk_widget_set_size_request(scrolled_assum_text, 600, 170);
+	scrolled_io_text= gtk_scrolled_window_new(NULL,NULL);
+	gtk_widget_set_size_request(scrolled_io_text, 600, 170);
+	
 	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolled_text),comment_text);	
-	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolled_assum_text),assumption_text);	
+	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolled_assum_text),assumption_text);
+	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolled_io_text),io_text);
+
+	
 	gtk_label_set_line_wrap (GTK_LABEL(comment_text), true);	
 	gtk_label_set_line_wrap (GTK_LABEL(assumption_text), true);	
 	for(int i=0; i<3; i++){		
@@ -686,6 +742,7 @@ void cb_abutton(GtkWidget *widget, gpointer data) {
 	gtk_box_pack_start(GTK_BOX(hbox_result), arrow_frame[2], TRUE, TRUE, 5);	
 	gtk_box_pack_start(GTK_BOX(hbox_result), scrolled_result[3], TRUE, TRUE, 5);
 	gtk_box_pack_start(GTK_BOX(hbox_desc_assum), scrolled_text, TRUE, TRUE, 5);
+	gtk_box_pack_start(GTK_BOX(hbox_desc_assum), scrolled_io_text, TRUE, TRUE, 5);
 	gtk_box_pack_start(GTK_BOX(hbox_desc_assum), scrolled_assum_text, TRUE, TRUE, 5);	
 	gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 5);	
 	gtk_box_pack_start(GTK_BOX(vbox), searching_arc_button, TRUE, TRUE, 5);	
@@ -822,11 +879,8 @@ void cb_menu(GtkComboBox *combo, textstruct* data){
 	if(itm!=model_list.end()){
 		themodel=itm;
 		int n=0;
-		tmp="input: \n\n";
-		while(itm->input[n][0]!=""){
-			tmp=tmp+itm->input[n][0]+": "+itm->input[n][1]+"\t\t//"+itm->input[n][2]+"\n";
-			n++;			
-		}
+		tmp=get_ioinfo_string(itm);
+
 		gtk_entry_set_text (GTK_ENTRY(otherwgt4), (itm->dft[0]).c_str());
 		gtk_label_set_text(GTK_LABEL(otherwgt2),tmp.c_str());
 		gtk_label_set_text(GTK_LABEL(otherwgt1), ("User Guide for The Model:\n\n"+itm->guide).c_str());

@@ -6,28 +6,28 @@
 list<model_class> allcandidate[LENGTH];
 list<string> uml_text_list;
 
-
+int find_model_arc(list<string> *input_name_list, string outputs, int depth);
 int find_candidate(string outputs, list<model_class> *candidate, list<string> *input_name_list);
 bool check_dup(model_class a);
 bool exist_in_list(string s, list<string> *input_name_list);
 bool add_mark(string, int);
-int reverse_find_model_arc(list<string> output_name_list);
+int reverse_find_model_arc(list<string> output_name_list, int depth);
 int reverse_find_candidate(list<model_class> *candidate, list<string> *output_name_list);
-int forward_find_model_arc(list<string> input_name_list);
+int forward_find_model_arc(list<string> input_name_list, int depth);
 int forward_find_candidate(list<model_class> *candidate, list<string> *input_name_list);
 string without_unit(string name);			//when compire tags, get rid of unit after comma
 int generate_uml_text(const char* filename);
 string uml_text_format(list<model_class>::iterator it, list<model_class>::iterator it1);
 
-int find_model_arc(list<string> *input_name_list, string outputs){				//input/output based search
+int find_model_arc(list<string> *input_name_list, string outputs, int depth ){				//input/output based search
 	int rt=1;
-	for(int i=0; i<LENGTH; i++){
+	for(int i=0; i<depth+1; i++){
 		rt=find_candidate(outputs, &allcandidate[i], input_name_list);
 		if(rt==0) break;
 	}
 	list<model_class>::iterator it;
 
-	for(int i=0; i<LENGTH; i++){
+	for(int i=0; i<depth+1; i++){
 		if(!allcandidate[i].empty()){
 			for(it=allcandidate[i].begin(); it!=allcandidate[i].end(); it++){				
 				cout<<it->name<<" ";		
@@ -36,20 +36,20 @@ int find_model_arc(list<string> *input_name_list, string outputs){				//input/ou
 		}	
 	}
 	generate_uml_text(uml_text_file);
-	add_mark(outputs, 3);
+	add_mark(outputs, depth);
 	return rt;
 }
 
 	
-int forward_find_model_arc(list<string> *input_name_list){			//input based search
+int forward_find_model_arc(list<string> *input_name_list, int depth){			//input based search
 	int rt=1;
-	for(int i=0; i<LENGTH; i++){
+	for(int i=0; i<depth+1; i++){
 		rt=forward_find_candidate(&allcandidate[i], input_name_list);
 		if(rt==0) break;
 	}
 	list<model_class>::iterator it;
 
-	for(int i=0; i<LENGTH; i++){
+	for(int i=0; i<depth+1; i++){
 		if(!allcandidate[i].empty()){
 			for(it=allcandidate[i].begin(); it!=allcandidate[i].end(); it++){				
 				cout<<it->name<<" ";		
@@ -64,16 +64,16 @@ int forward_find_model_arc(list<string> *input_name_list){			//input based searc
 
 
 
-int reverse_find_model_arc(list<string> *output_name_list){					//output based search
+int reverse_find_model_arc(list<string> *output_name_list, int depth){					//output based search
 
 	int rt=1;
-	for(int i=LENGTH-1; i>=0; i--){
+	for(int i=LENGTH-1; i>=LENGTH-depth-1; i--){	
 		rt=reverse_find_candidate( &allcandidate[i], output_name_list);
 		if(rt==0) break;
 	}
 	list<model_class>::iterator it;
 
-	for(int i=0; i<LENGTH; i++){
+	for(int i=0; i<depth+1; i++){
 		if(!allcandidate[i].empty()){
 			for(it=allcandidate[i].begin(); it!=allcandidate[i].end(); it++){				
 				cout<<it->name<<" ";		
@@ -283,7 +283,7 @@ int generate_uml_text(const char* filename){
 	 
 	FILE.open(filename);
 	
-	int m,n,j;
+	int m,n,j,flag;			//flag to see if this model is the only one (no connection to others)
 	list<model_class>::iterator it;
 	list<model_class>::iterator it1;
 
@@ -293,8 +293,9 @@ int generate_uml_text(const char* filename){
 		if(!allcandidate[i].empty()){ 
 			for(it=allcandidate[i].begin(); it!=allcandidate[i].end(); it++){
 				m=0;
+				flag=0;
 				while(it->output[m][0]!=""){
-
+				
 					for(j=i+1; j<LENGTH; j++){
 						for(it1=allcandidate[j].begin(); it1!=allcandidate[j].end(); it1++){	
 							n=0;
@@ -302,6 +303,7 @@ int generate_uml_text(const char* filename){
 								if(without_unit(it->output[m][0])==without_unit(it1->input[n][0])){
 									
 									uml_text_list.push_back(uml_text_format(it,it1));
+									flag=1;
 									break;
 
 								}
@@ -328,7 +330,7 @@ int generate_uml_text(const char* filename){
 								while(it1->input[n][0]!=""){
 
 									if(without_unit(sub)==without_unit(it1->input[n][0])){
-									
+										flag=1;
 										uml_text_list.push_back(uml_text_format(it,it1));
 										break;
 
@@ -372,7 +374,7 @@ int generate_uml_text(const char* filename){
 
 string uml_text_format(list<model_class>::iterator it, list<model_class>::iterator it1){
 
-	string rt="["+it->name+"]"+"->"+"["+it1->name+"]";
+		string rt="["+it->name+"]"+"->"+"["+it1->name+"]";
 	return rt;
 
 }
