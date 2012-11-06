@@ -97,6 +97,7 @@ extern list<input_class> input_list;
 extern const char* config_file_name;
 extern const char* input_file_name;
 extern int create_input_file(list<input_class> );
+extern string without_unit(string name);
 
 
 #endif

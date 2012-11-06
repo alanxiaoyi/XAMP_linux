@@ -48,14 +48,23 @@ int create_input_file(list<input_class> input_list){
 	list<input_class>::iterator its;	
 	cout<<"creating input file according to config file"<<endl;		
 	TiXmlDocument doc;
+	TiXmlHandle docHandle(&doc);
 	TiXmlDeclaration * decl = new TiXmlDeclaration( "1.0", "", "" );		
 	doc.LinkEndChild(decl);
-	for(its=input_list.begin(); its!=input_list.end();its++){
+	for(its=input_list.begin(); its!=input_list.end();its++){	
+		string type_name=check_pool("input_tag_pool", its->name);		//FIXME: add other pool in the tag pool file in the future work
+		if(!docHandle.FirstChild(type_name.c_str()).ToNode()){
+			TiXmlElement * new_type=new TiXmlElement(type_name.c_str());
+			doc.LinkEndChild(new_type);
+		}
+		
+		TiXmlElement* type_element=docHandle.FirstChild(type_name.c_str()).ToElement();		
+		
 		TiXmlElement * input=new TiXmlElement("input");
 		input->SetAttribute("name", (its->name).c_str());
 		input->SetAttribute("value", (its->content).c_str());
 		input->SetAttribute("description", (its->comment).c_str());
-		doc.LinkEndChild(input);
+		type_element->LinkEndChild(input);
 	}
 		
 	ifstream check_input("input.xml");
@@ -116,7 +125,9 @@ int parse_config(const char* a, bool createornot){
 								model_list.back().input[n][0]=(string)(child->Attribute("name"));
 							else {cout<<"empty name in xml!"<<endl; exit(1);}
 							model_list.back().input[n][1]=(string)(child->Attribute("default"));
-							model_list.back().input[n][2]=(string)(child->Attribute("description"))+", from model ["+model->Attribute("ID")+"]; ";
+							stringstream ss;
+							ss<<num;
+							model_list.back().input[n][2]=(string)(child->Attribute("description"))+", from model ["+ss.str()+"]; ";
 							model_list.back().input[n][3]=(string)(child->Attribute("primary"));
 							n++;
 						}
@@ -127,6 +138,7 @@ int parse_config(const char* a, bool createornot){
 							if(child->Attribute("name")!=""){
 								model_list.back().output[n][0]=(string)(child->Attribute("name"));
 								model_list.back().output[n][1]=(string)(child->Attribute("description"));
+								model_list.back().output[n][2]=(string)(child->Attribute("derive"));
 							}
 							else {cout<<"empty name in xml!"<<endl; exit(1);}
 							n++;
@@ -208,22 +220,24 @@ int parse_input_file(const char* a){
 
 	if(doc.LoadFile(a)){	
 		TiXmlHandle docHandle(&doc);
-		TiXmlElement* inputelemt=docHandle.FirstChildElement().ToElement();
-		for(inputelemt; inputelemt; inputelemt=inputelemt->NextSiblingElement("input")){
-			input_class newinput;
-			newinput.name=(string)(inputelemt->Attribute("name"));
-			newinput.content=(string)(inputelemt->Attribute("value"));
-			for(it=model_list.begin(); it!=model_list.end();it++){   //search the model in the link list and then fill in the content
-				int n=0;
-				while(it->input[n][0]!=""){
-					if(newinput.name==it->input[n][0])
-						it->input[n][1]=newinput.content;	
-						n++;
-				}
+		TiXmlElement* inputelemt_type=docHandle.FirstChildElement().ToElement();
+		for(inputelemt_type; inputelemt_type; inputelemt_type=inputelemt_type->NextSiblingElement()){	
+			for(TiXmlElement* inputelemt=inputelemt_type->FirstChildElement(); inputelemt; inputelemt=inputelemt->NextSiblingElement("input")){
+				input_class newinput;
+				newinput.name=(string)(inputelemt->Attribute("name"));
+				newinput.content=(string)(inputelemt->Attribute("value"));
+				for(it=model_list.begin(); it!=model_list.end();it++){   //search the model in the link list and then fill in the content
+					int n=0;
+					while(it->input[n][0]!=""){
+						if(newinput.name==it->input[n][0])
+							it->input[n][1]=newinput.content;	
+							n++;
+					}
 				
-			}
-			newinput.comment=(string)(inputelemt->Attribute("description"));
-			input_list.push_back(newinput);							
+				}
+				newinput.comment=(string)(inputelemt->Attribute("description"));
+				input_list.push_back(newinput);	
+			}						
 		}	
 	}
 	else {
@@ -259,5 +273,31 @@ int check_ready(){
 	}
 }
 
+/*check corresponding tag pool to see if exists and return its type
+*/
+ 
+string check_pool(string pool_name, string tag_name){
+	TiXmlDocument doc;
+	const char* tag_pool_file="tag_pool.xml";
+	if(doc.LoadFile(tag_pool_file)){
+		TiXmlHandle docHandle(&doc);
+		TiXmlElement* tag_type=docHandle.FirstChild(pool_name.c_str()).FirstChild().ToElement();
+		for(tag_type; tag_type; tag_type=tag_type->NextSiblingElement()){	
+			for(TiXmlElement* elemt=tag_type->FirstChildElement(); elemt; elemt= elemt->NextSiblingElement()){			
+				if(strcmp(without_unit(elemt->Attribute("name")).c_str(),(without_unit(tag_name)).c_str())==0){
+					return (string)(tag_type->Value());
+				}
+			}			
+		}
+	}
+	else {
+		cout<<"loading XML file failed "<<endl;
+		cout<<doc.ErrorDesc()<<endl;
+		cout<<"row: "<<doc.ErrorRow()<<" column: "<<doc.ErrorCol()<<endl;
+		exit(1);
+
+	} 
+	return "NA";
+}	
 
 

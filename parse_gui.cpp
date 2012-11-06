@@ -52,7 +52,7 @@ int create_input_file(list<input_class> input_list){
 	TiXmlDeclaration * decl = new TiXmlDeclaration( "1.0", "", "" );		
 	doc.LinkEndChild(decl);
 	for(its=input_list.begin(); its!=input_list.end();its++){	
-		string type_name=check_pool("input_tag_pool", its->name);
+		string type_name=check_pool("input_tag_pool", its->name);		//FIXME: may add other pool in the tag pool file in future work
 		if(!docHandle.FirstChild(type_name.c_str()).ToNode()){
 			TiXmlElement * new_type=new TiXmlElement(type_name.c_str());
 			doc.LinkEndChild(new_type);
@@ -115,7 +115,9 @@ int parse_config(const char* a, bool createornot){
 								model_list.back().input[n][0]=(string)(child->Attribute("name"));
 							else {cout<<"empty name in xml!"<<endl; exit(1);}
 							model_list.back().input[n][1]=(string)(child->Attribute("default"));
-							model_list.back().input[n][2]=(string)(child->Attribute("description"))+", from model ["+model->Attribute("ID")+"]; ";
+							stringstream ss;
+							ss<<num;
+							model_list.back().input[n][2]=(string)(child->Attribute("description"))+", from model ["+ss.str()+"]; ";
 							model_list.back().input[n][3]=(string)(child->Attribute("primary"));
 							n++;
 						}
@@ -250,7 +252,7 @@ int check_ready(){
 		n=0;
 		flag=0;
 		while(it->input[n][0]!=""){
-			if(it->input[n][1]=="") {
+			if(it->input[n][1]=="" && it->input[n][3]=="y") {
 				flag=1;
 				break;
 			}
@@ -271,7 +273,7 @@ string check_pool(string pool_name, string tag_name){
 		TiXmlElement* tag_type=docHandle.FirstChild(pool_name.c_str()).FirstChild().ToElement();
 		for(tag_type; tag_type; tag_type=tag_type->NextSiblingElement()){	
 			for(TiXmlElement* elemt=tag_type->FirstChildElement(); elemt; elemt= elemt->NextSiblingElement()){			
-				if(strcmp(elemt->Attribute("name"),tag_name.c_str())==0){
+				if(strcmp(without_unit(elemt->Attribute("name")).c_str(),(without_unit(tag_name)).c_str())==0){
 					return (string)(tag_type->Value());
 				}
 			}			

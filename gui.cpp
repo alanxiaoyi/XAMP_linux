@@ -286,8 +286,8 @@ void tree_selection_changed_cb (GtkTreeSelection *selection, gpointer data)
                 cout<<"you select "<<name_s<<endl;
 				for(it=model_list.begin(); it!=model_list.end(); it++){
 					if(it->name==name_s){					//find the model by name
-							gtk_label_set_text(GTK_LABEL(comment_text),("Description:\n"+it->comment).c_str());	
-							gtk_label_set_text(GTK_LABEL(assumption_text),("Assumption:\n"+it->assumption).c_str());
+							gtk_label_set_text(GTK_LABEL(comment_text),("Description of the model:\n"+it->comment).c_str());	
+							gtk_label_set_text(GTK_LABEL(assumption_text),("Assumption used by the model:\n"+it->assumption).c_str());
 							gtk_label_set_text(GTK_LABEL(io_text),get_ioinfo_string(it).c_str());
 	
 					}
@@ -521,21 +521,25 @@ void cb_pipe_button(GtkWidget *widget, gpointer data) {
 }		
 
 
-/*arc button
+/*arc button	/construct the second window here  FIXME:better implement this out side the call back function
 */
 void cb_abutton(GtkWidget *widget, gpointer data) {
 	g_print("push arc_button\n"); 
-	GtkWidget *vbox_combo,*vbox, *hbox,*hbox_desc_assum,*hbox_result,*arrow_frame[3], *searching_arc_button;
+	GtkWidget *vbox_combo,*vbox,*vbox_step2, *hbox,*hbox_desc_assum,*hbox_result,*arrow_frame[3], *searching_arc_button;
 	GtkWidget *scrolled_text,*scrolled_assum_text, *scrolled_io_text, *scrolledwindow_in,*scrolledwindow_out, *scrolled_result[4];
 	GtkWidget *arrow[3];
 	GtkWidget *hbox_command;
 	GtkWidget *pipe_button;
 
+	GtkWidget *step_frame[4];
+	GtkWidget *combo_io=gtk_label_new("Query Type:");
+	GtkWidget *combo_dp=gtk_label_new("Query Depth:");
+
 
 	//pipe button
 	
 	
-	pipe_button = gtk_button_new_with_label("pipe commands");	
+	pipe_button = gtk_button_new_with_label("Launch");	
 	g_signal_connect(G_OBJECT(pipe_button), "clicked", G_CALLBACK(cb_pipe_button),NULL);	
 	
 	
@@ -592,6 +596,7 @@ void cb_abutton(GtkWidget *widget, gpointer data) {
 	
 	vbox = gtk_vbox_new(FALSE, 0);
 	vbox_combo = gtk_vbox_new(FALSE, 0);
+	vbox_step2=gtk_vbox_new(FALSE,0);
 	hbox = gtk_hbox_new(FALSE, 0);
 	hbox_desc_assum=gtk_hbox_new(FALSE, 0);
 	hbox_command=gtk_hbox_new(FALSE, 0);
@@ -600,7 +605,7 @@ void cb_abutton(GtkWidget *widget, gpointer data) {
 	list<string> output_treeview_list, input_treeview_list;
 
 	
-	searching_arc_button = gtk_button_new_with_label("Searching");	
+	searching_arc_button = gtk_button_new_with_label("Construct model connection topology");	
 	g_signal_connect(G_OBJECT(searching_arc_button), "clicked", G_CALLBACK(cb_search_button),NULL);
 	
 	list<model_class>::iterator itm;
@@ -653,8 +658,8 @@ void cb_abutton(GtkWidget *widget, gpointer data) {
 	
 	
 	
-	column_in = gtk_tree_view_column_new_with_attributes("input list", renderer, "text", 0, NULL);
-	column_out = gtk_tree_view_column_new_with_attributes("output list", renderer, "text", 0, NULL);	
+	column_in = gtk_tree_view_column_new_with_attributes("Input List", renderer, "text", 0, NULL);
+	column_out = gtk_tree_view_column_new_with_attributes("Output List", renderer, "text", 0, NULL);	
 	list_in = gtk_tree_view_new();
 	list_out = gtk_tree_view_new();
 	store_in = gtk_list_store_new(1, G_TYPE_STRING);  
@@ -669,8 +674,8 @@ void cb_abutton(GtkWidget *widget, gpointer data) {
 	gtk_tree_selection_set_mode (selection_in, GTK_SELECTION_MULTIPLE);
 	
 	second_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_title(GTK_WINDOW(second_window), "seeking model arc");	
-	gtk_window_set_default_size(GTK_WINDOW(second_window), 1300,700); 	
+	gtk_window_set_title(GTK_WINDOW(second_window), "Seeking Model Chain");	
+	gtk_window_set_default_size(GTK_WINDOW(second_window), 1400,830); 	
 	gtk_window_set_policy (GTK_WINDOW(second_window), true, true, true);
 
 
@@ -727,9 +732,11 @@ void cb_abutton(GtkWidget *widget, gpointer data) {
 		gtk_box_pack_start(GTK_BOX(hbox_command), ops_box[i], TRUE, TRUE, 5);	
 	}
 	
-		gtk_box_pack_start(GTK_BOX(hbox_command), command_box[3], TRUE, TRUE, 5);			
-
+		gtk_box_pack_start(GTK_BOX(hbox_command), command_box[3], TRUE, TRUE, 5);	
+		
+	gtk_box_pack_start(GTK_BOX(vbox_combo), combo_io, TRUE, TRUE, 5);
 	gtk_box_pack_start(GTK_BOX(vbox_combo), combo_iobase, TRUE, TRUE, 5);
+	gtk_box_pack_start(GTK_BOX(vbox_combo), combo_dp, TRUE, TRUE, 5);
 	gtk_box_pack_start(GTK_BOX(vbox_combo), combo_depth, TRUE, TRUE, 5);
 	gtk_box_pack_start(GTK_BOX(hbox), scrolledwindow_in, TRUE, TRUE, 5);
 	gtk_box_pack_start(GTK_BOX(hbox), vbox_combo, TRUE, TRUE, 5);
@@ -741,14 +748,28 @@ void cb_abutton(GtkWidget *widget, gpointer data) {
 	gtk_box_pack_start(GTK_BOX(hbox_result), scrolled_result[2], TRUE, TRUE, 5);
 	gtk_box_pack_start(GTK_BOX(hbox_result), arrow_frame[2], TRUE, TRUE, 5);	
 	gtk_box_pack_start(GTK_BOX(hbox_result), scrolled_result[3], TRUE, TRUE, 5);
+	gtk_box_pack_start(GTK_BOX(vbox_step2), searching_arc_button, TRUE, TRUE, 5);
+	gtk_box_pack_start(GTK_BOX(vbox_step2), hbox_result, TRUE, TRUE, 5);
 	gtk_box_pack_start(GTK_BOX(hbox_desc_assum), scrolled_text, TRUE, TRUE, 5);
 	gtk_box_pack_start(GTK_BOX(hbox_desc_assum), scrolled_io_text, TRUE, TRUE, 5);
-	gtk_box_pack_start(GTK_BOX(hbox_desc_assum), scrolled_assum_text, TRUE, TRUE, 5);	
-	gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 5);	
-	gtk_box_pack_start(GTK_BOX(vbox), searching_arc_button, TRUE, TRUE, 5);	
-	gtk_box_pack_start(GTK_BOX(vbox), hbox_result, TRUE, TRUE, 5);
-	gtk_box_pack_start(GTK_BOX(vbox), hbox_command, TRUE, TRUE, 5);
-	gtk_box_pack_start(GTK_BOX(vbox), pipe_button, TRUE, TRUE, 5);
+	gtk_box_pack_start(GTK_BOX(hbox_desc_assum), scrolled_assum_text, TRUE, TRUE, 5);
+
+	step_frame[0]=gtk_frame_new ("Step 1: Choose a query and select available inputs and desired outputs as applicable.");	
+	step_frame[1]=gtk_frame_new ("Step 2: Run the query engine to construct model connection topology, then select models to connect.");	
+	step_frame[2]=gtk_frame_new ("Step 3: Enter a command for each selected model, and specify the output tag of a model as input to the next model. \nOutput may be arithmetically transformed (optional).");	
+	step_frame[3]=gtk_frame_new ("Step 4: Launch the selected models. ");		
+	gtk_container_add(GTK_CONTAINER(step_frame[0]), hbox); 	
+	gtk_container_add(GTK_CONTAINER(step_frame[1]), vbox_step2); 
+	gtk_container_add(GTK_CONTAINER(step_frame[2]), hbox_command);
+	gtk_container_add(GTK_CONTAINER(step_frame[3]), pipe_button);
+
+
+
+	
+	gtk_box_pack_start(GTK_BOX(vbox), step_frame[0], TRUE, TRUE, 5);	
+	gtk_box_pack_start(GTK_BOX(vbox), step_frame[1], TRUE, TRUE, 5);	
+	gtk_box_pack_start(GTK_BOX(vbox), step_frame[2], TRUE, TRUE, 5);
+	gtk_box_pack_start(GTK_BOX(vbox), step_frame[3], TRUE, TRUE, 5);
 	gtk_box_pack_start(GTK_BOX(vbox), hbox_desc_assum, TRUE, TRUE, 5);
 	
 	gtk_container_add(GTK_CONTAINER(second_window), vbox);	
@@ -883,9 +904,9 @@ void cb_menu(GtkComboBox *combo, textstruct* data){
 
 		gtk_entry_set_text (GTK_ENTRY(otherwgt4), (itm->dft[0]).c_str());
 		gtk_label_set_text(GTK_LABEL(otherwgt2),tmp.c_str());
-		gtk_label_set_text(GTK_LABEL(otherwgt1), ("User Guide for The Model:\n\n"+itm->guide).c_str());
-		gtk_label_set_text(GTK_LABEL(otherwgt3), ("Description for The Model:\n\n"+itm->comment).c_str());
-		gtk_label_set_text(GTK_LABEL(otherwgt5), ("Assumption for The Model:\n\n"+itm->assumption).c_str());
+		gtk_label_set_text(GTK_LABEL(otherwgt1), ("User Guide:\n\n"+itm->guide).c_str());
+		gtk_label_set_text(GTK_LABEL(otherwgt3), ("Description of the model:\n\n"+itm->comment).c_str());
+		gtk_label_set_text(GTK_LABEL(otherwgt5), ("Assumption used by the model:\n\n"+itm->assumption).c_str());
 	}
 }
 
@@ -904,7 +925,7 @@ int call_gui() {
 	main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	g_signal_connect(G_OBJECT(main_window), "destroy", G_CALLBACK(gtk_main_quit), NULL); 
 	gtk_window_set_title(GTK_WINDOW(main_window), "XAMP"); 
-	gtk_window_set_default_size(GTK_WINDOW(main_window), 930,830); 
+	gtk_window_set_default_size(GTK_WINDOW(main_window), 980,830); 
 	gtk_window_set_policy (GTK_WINDOW(main_window), true, true, true);
 	gtk_window_set_icon(GTK_WINDOW(main_window), create("icon.png"));
 
@@ -924,7 +945,7 @@ int call_gui() {
 	textmove->assumtext=gtk_label_new("");
 	result_text=gtk_label_new("");
 	gtk_label_set_selectable (GTK_LABEL(result_text), true);
-	headtext=gtk_label_new("This is the GUI model platform. Please use it as 3 steps as below, and also refer to README for more information. Copyright (c)2012, Yan Solihin and Yipeng Wang. All Rights Reserved.");
+	headtext=gtk_label_new("Welcome to XAMP. Refer to README for more information. Copyright (c)2012, Yan Solihin and Yipeng Wang. All Rights Reserved.");
 	gtk_widget_set_size_request(  headtext , 700, -1 );
 	gtk_label_set_line_wrap (GTK_LABEL(headtext), true);	
 	combotext=gtk_label_new("Choose model:");
@@ -933,9 +954,9 @@ int call_gui() {
 	gtk_label_set_line_wrap (GTK_LABEL(textmove->text), true);			//guide text wrap
 	gtk_widget_set_size_request(textmove->text, 370,-1);				//wrap on the bound of the scrolled window
 	gtk_label_set_line_wrap (GTK_LABEL(textmove->desctext), true);		//description text wrap
-	gtk_widget_set_size_request(textmove->desctext, 400,-1);				//wrap on the bound of the scrolled window
+	gtk_widget_set_size_request(textmove->desctext, 440,-1);				//wrap on the bound of the scrolled window
 	gtk_label_set_line_wrap (GTK_LABEL(textmove->assumtext), true);		//description text wrap
-	gtk_widget_set_size_request(textmove->assumtext, 400,-1);				//wrap on the bound of the scrolled window
+	gtk_widget_set_size_request(textmove->assumtext, 440,-1);				//wrap on the bound of the scrolled window
 	g_signal_connect(G_OBJECT(combo), "changed", G_CALLBACK(cb_menu),textmove);
 	
 	/*scroll window
@@ -946,10 +967,10 @@ int call_gui() {
 	scrolledwindow4 = gtk_scrolled_window_new(NULL,NULL);
 	scrolledwindow5 = gtk_scrolled_window_new(NULL,NULL);
 	scrolledwindow_all = gtk_scrolled_window_new(NULL,NULL);
-	gtk_widget_set_size_request(scrolledwindow1, 430, 170);		//guide
-	gtk_widget_set_size_request(scrolledwindow2, 430, 170);		//iotext
-	gtk_widget_set_size_request(scrolledwindow3,430, 170);		//desctext
-	gtk_widget_set_size_request(scrolledwindow5,430, 170);		//assumtext
+	gtk_widget_set_size_request(scrolledwindow1, 455, 170);		//guide
+	gtk_widget_set_size_request(scrolledwindow2, 460, 170);		//iotext
+	gtk_widget_set_size_request(scrolledwindow3,455, 170);		//desctext
+	gtk_widget_set_size_request(scrolledwindow5,460, 170);		//assumtext
 	gtk_widget_set_size_request(scrolledwindow4,700, 150);		//resulttext
 
 	
@@ -963,9 +984,9 @@ int call_gui() {
 	*/
 	exit_button = gtk_button_new_with_label("Exit");
 	input_button = gtk_button_new_with_label("Parse Input File");
-	arc_button = gtk_button_new_with_label("model arc");
-	deduction_button = gtk_button_new_with_label("Input Deduction");
-	config_button = gtk_button_new_with_label("Parse config and create new input file");
+	arc_button = gtk_button_new_with_label("Connect Multiple Models");
+	deduction_button = gtk_button_new_with_label("Deduce Additional Inputs");
+	config_button = gtk_button_new_with_label("Parse Config and Create New Input File");
 	enter_button = gtk_button_new_with_label("Enter");
 	g_signal_connect(G_OBJECT(exit_button), "clicked", G_CALLBACK(cb_qbutton),NULL);
 	g_signal_connect(G_OBJECT(input_button), "clicked", G_CALLBACK(cb_ibutton),combo);
@@ -1033,9 +1054,9 @@ int call_gui() {
 	
 	/*frame
 	*/
-	frame1=gtk_frame_new ("Step1. Parse configure/input file");
-	frame2=gtk_frame_new ("Step2. Choose a model and read the description");	
-	frame3=gtk_frame_new ("Step3. Enter command as instruction");	
+	frame1=gtk_frame_new ("Step 1: \nParse configuration and input files.\nClick \"Parse Input File\" if you want to read in new input values into XAMP (optional).\nClick \"Deduce Additional Inputs\" to derive additional inputs from existing inputs (optional).\n");
+	frame2=gtk_frame_new ("Step2. Choose a model");	
+	frame3=gtk_frame_new ("Step3. Enter command");	
 	frame4=gtk_frame_new ("Result");	
 	gtk_container_add(GTK_CONTAINER(frame1), buttonbox1); 	
 	gtk_container_add(GTK_CONTAINER(frame2), vbox_s2); 

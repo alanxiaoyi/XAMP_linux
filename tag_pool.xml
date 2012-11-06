@@ -1,18 +1,17 @@
 <?xml version="1.0" ?>
 
-<!-- this tag pool file contains tags that you can pick up from to use as input or output
+<!-- this tag pool file contains pool of tags that you can pick up from to use as input (FIXME: add output tag in future work)
 tags-->
 
 <!--
 /*********input naming principle*************/
 1. use '_' to seperate words. 
-2. If have unit, please use ',' flowed by the unit.
+2. If have unit, don't add the unit in the tag pool
 3. factor and constant use 'factor' as beginning, followed by section describing the model, followed by the name of the factor.
 4. if no need to distinguish cache level, use general name like "cache_miss_rate"
 5. file path name use 'file' as begin
-6. use '_<number>' like '_1' for distinguishing same factor. Ex. file_csq, and file_csq_1
-8. parameters that specific belong to certain models, use a short desciption, like "acapp_replace_policy".
-9. if too many inputs, and(or) you don't want XAMP to analyze them, please use 'too_many'.
+6. parameters that specific belong to certain models, use a short desciption, like "acapp_replace_policy".
+7. if too many inputs, and(or) you don't want XAMP to analyze them, please use 'too_many'.
 -->
 
 <input_tag_pool>
@@ -81,32 +80,31 @@ tags-->
 		<tag name="L2_Icache_cache_size" description="" />
 		<tag name="L1_Ucache_cache_size" description="" />
 		<tag name="L2_Ucache_cache_size" description="" />
-		<tag name="cache_cache_size" description="" />
+		<tag name="cache_size" description="" />
 
 	</cache>
 
 
 	<memory>
 
-		<tag name="memory_bandwidth_requirement,B/s" description="" />
-		<tag name="memory_bandwidth_requirement,GB/s" description="" />
-		<tag name="memory_access_penalty,cycles" description="" />
+		<tag name="memory_bandwidth" description="" />
+		<tag name="memory_access_penalty" description="" />
 
 	</memory>
 
 	<core_and_chip_wide>
-		<tag name="core_bandwidth_requirement,GB/s" description="" />
+		<tag name="core_bandwidth" description="" />
 		<tag name="core_count" description="" />
 		<tag name="thread_count" description="" />
 		<tag name="core_area" description="" />
 		<tag name="chip_area" description="" />
-		<tag name="core_frequency,GB/s" description="" />
+		<tag name="core_frequency" description="" />
 		<tag name="big_core_speed" description="heterogenious core, the relative speed of the big core" />
 		<tag name="CPI_infinitL2" description="CPI assuming infinite L2 cache size" />
 		<tag name="CPI_alone" description="CPI of one thread when running alone in a CMP system" />
 		<tag name="CPI_preL2" description="CPI in the core and L1 cache" />
 		<tag name="CPI_core" description="" />
-		<tag name="tech_node,nm" description="" />
+		<tag name="tech_node" description="" />
 
 	</core_and_chip_wide>
 
@@ -114,7 +112,6 @@ tags-->
 	<file_path>
 		<tag name="file_benchmark" description="" />
 		<tag name="file_csq" description="" />
-		<tag name="file_csq_1" description="" />
 	</file_path>
 
 	<factor_or_constant>
@@ -123,10 +120,9 @@ tags-->
 		<tag name="factor_memwall_indirect_tech" description="" />
 		<tag name="factor_memwall_direct_tech" description="" />
 		<tag name="factor_memwall_annual_bwgrowth" description="" />
-		<tag name="factor_impact_sharing" description="sharing impact factor for the data sharing model" />
+		<tag name="factor_sharing_impact" description="sharing impact factor for the data sharing model" />
 		<tag name="factor_examdahl_ACS_a" description="" />
 		<tag name="factor_examdahl_ACS_b" description="" />
-		<tag name="fraction_serial" description="serial fraction of one program" />
 	</factor_or_constant>
 
 
@@ -135,7 +131,7 @@ tags-->
 		<tag name="contextswitch_shift_amount" description="shift amount in the context switch model " />
 		<tag name="examdahl_probability_contention" description="the probability of contention in extended examdahl's law" />
 		<tag name="examdahl_fraction_parallel_outside_critical" description="" />
-		<tag name="examdahl_fraction_parallel_inside_critical_examdahl" description="" />
+		<tag name="examdahl_fraction_parallel_inside_critical" description="" />
 		<tag name="fraction_serial" description="" />
 	</specific_parameters>
 
