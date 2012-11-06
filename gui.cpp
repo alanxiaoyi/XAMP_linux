@@ -521,7 +521,7 @@ void cb_pipe_button(GtkWidget *widget, gpointer data) {
 }		
 
 
-/*arc button	/construct the second window here  FIXME:better implement this out side the call back function
+/*arc button	/construct the second window here  FIXME:better implement this outside the call back function
 */
 void cb_abutton(GtkWidget *widget, gpointer data) {
 	g_print("push arc_button\n"); 
@@ -530,10 +530,14 @@ void cb_abutton(GtkWidget *widget, gpointer data) {
 	GtkWidget *arrow[3];
 	GtkWidget *hbox_command;
 	GtkWidget *pipe_button;
+	GtkWidget *hbox_searching_arc_button, *hbox_pipe_button;
 
 	GtkWidget *step_frame[4];
 	GtkWidget *combo_io=gtk_label_new("Query Type:");
 	GtkWidget *combo_dp=gtk_label_new("Query Depth:");
+
+
+
 
 
 	//pipe button
@@ -589,11 +593,12 @@ void cb_abutton(GtkWidget *widget, gpointer data) {
 	scrolledwindow_in = gtk_scrolled_window_new(NULL,NULL);
 	scrolledwindow_out = gtk_scrolled_window_new(NULL,NULL);
 
-	gtk_widget_set_size_request(scrolledwindow_in, 400, 170);		//guide
-	gtk_widget_set_size_request(scrolledwindow_out, 400, 170);		//iotext	
+	gtk_widget_set_size_request(scrolledwindow_in, 400, 220);		//guide
+	gtk_widget_set_size_request(scrolledwindow_out, 400, 220);		//iotext	
 	
 	
-	
+	hbox_searching_arc_button = gtk_hbox_new(FALSE, 10);
+	hbox_pipe_button = gtk_hbox_new(FALSE, 10);
 	vbox = gtk_vbox_new(FALSE, 0);
 	vbox_combo = gtk_vbox_new(FALSE, 0);
 	vbox_step2=gtk_vbox_new(FALSE,0);
@@ -618,7 +623,7 @@ void cb_abutton(GtkWidget *widget, gpointer data) {
 	//4 result listview box and command box
 	for(int i=0; i<4; i++){
 		scrolled_result[i] = gtk_scrolled_window_new(NULL,NULL);
-		gtk_widget_set_size_request(scrolled_result[i], 200, 200);		
+		gtk_widget_set_size_request(scrolled_result[i], 200, 150);		
 		column_result[i]=gtk_tree_view_column_new_with_attributes("", renderer, "text", 0, NULL);
 		list_result[i]=gtk_tree_view_new();
 		gtk_tree_view_append_column(GTK_TREE_VIEW(list_result[i]), column_result[i]);
@@ -732,7 +737,11 @@ void cb_abutton(GtkWidget *widget, gpointer data) {
 		gtk_box_pack_start(GTK_BOX(hbox_command), ops_box[i], TRUE, TRUE, 5);	
 	}
 	
-		gtk_box_pack_start(GTK_BOX(hbox_command), command_box[3], TRUE, TRUE, 5);	
+	gtk_box_pack_start(GTK_BOX(hbox_command), command_box[3], TRUE, TRUE, 5);
+
+
+	 gtk_box_pack_start(GTK_BOX(hbox_pipe_button), pipe_button, false, false, 10);	
+	 gtk_box_pack_start(GTK_BOX(hbox_searching_arc_button), searching_arc_button, false, false, 10);		
 		
 	gtk_box_pack_start(GTK_BOX(vbox_combo), combo_io, TRUE, TRUE, 5);
 	gtk_box_pack_start(GTK_BOX(vbox_combo), combo_iobase, TRUE, TRUE, 5);
@@ -748,7 +757,7 @@ void cb_abutton(GtkWidget *widget, gpointer data) {
 	gtk_box_pack_start(GTK_BOX(hbox_result), scrolled_result[2], TRUE, TRUE, 5);
 	gtk_box_pack_start(GTK_BOX(hbox_result), arrow_frame[2], TRUE, TRUE, 5);	
 	gtk_box_pack_start(GTK_BOX(hbox_result), scrolled_result[3], TRUE, TRUE, 5);
-	gtk_box_pack_start(GTK_BOX(vbox_step2), searching_arc_button, TRUE, TRUE, 5);
+	gtk_box_pack_start(GTK_BOX(vbox_step2), hbox_searching_arc_button, TRUE, TRUE, 5);
 	gtk_box_pack_start(GTK_BOX(vbox_step2), hbox_result, TRUE, TRUE, 5);
 	gtk_box_pack_start(GTK_BOX(hbox_desc_assum), scrolled_text, TRUE, TRUE, 5);
 	gtk_box_pack_start(GTK_BOX(hbox_desc_assum), scrolled_io_text, TRUE, TRUE, 5);
@@ -761,7 +770,7 @@ void cb_abutton(GtkWidget *widget, gpointer data) {
 	gtk_container_add(GTK_CONTAINER(step_frame[0]), hbox); 	
 	gtk_container_add(GTK_CONTAINER(step_frame[1]), vbox_step2); 
 	gtk_container_add(GTK_CONTAINER(step_frame[2]), hbox_command);
-	gtk_container_add(GTK_CONTAINER(step_frame[3]), pipe_button);
+	gtk_container_add(GTK_CONTAINER(step_frame[3]), hbox_pipe_button);
 
 
 
@@ -914,7 +923,7 @@ int call_gui() {
 	g_thread_init(NULL);
    	gdk_threads_init();
 	gtk_init(NULL, NULL);
-	GtkWidget *hbox_head,*hbox1, *hbox2, *hbox3 ,*hbox4,*hbox4_1,*hbox4_2,*hbox_desc,*hbox_assum ,*vbox, *hbox_desc_assum;
+	GtkWidget *hbox_head,*hbox1, *hbox2, *hbox3 ,*hbox4,*hbox_arc_button, *hbox4_1,*hbox4_2,*hbox_desc,*hbox_assum ,*vbox, *hbox_desc_assum;
 	GtkWidget *arc_button, *exit_button,*input_button,*deduction_button,*enter_button,*config_button, *combotext,*headtext;
 	GtkWidget *buttonbox1,*frame0, *frame1, *frame2, *frame3, *frame4, *frame5, *frame6, *vbox_s3,*vbox_s2;
 	GtkWidget *scrolledwindow1,*scrolledwindow2,*scrolledwindow3,*scrolledwindow4,*scrolledwindow5, *scrolledwindow_all;
@@ -945,12 +954,12 @@ int call_gui() {
 	textmove->assumtext=gtk_label_new("");
 	result_text=gtk_label_new("");
 	gtk_label_set_selectable (GTK_LABEL(result_text), true);
-	headtext=gtk_label_new("Welcome to XAMP. Refer to README for more information. Copyright (c)2012, Yan Solihin and Yipeng Wang. All Rights Reserved.");
-	gtk_widget_set_size_request(  headtext , 700, -1 );
-	gtk_label_set_line_wrap (GTK_LABEL(headtext), true);	
+	headtext=gtk_label_new("\t\t\t**********Welcome to XAMP********** \nCopyright (c)2012, Yan Solihin and Yipeng Wang. All Rights Reserved.");
+//	gtk_widget_set_size_request(  headtext , 700, -1 );
+//	gtk_label_set_line_wrap (GTK_LABEL(headtext), true);	
 	combotext=gtk_label_new("Choose model:");
 	gtk_label_set_line_wrap( GTK_LABEL( result_text), TRUE );
-	gtk_widget_set_size_request(  result_text , 700, -1 );
+	gtk_widget_set_size_request(  result_text , 900, -1 );
 	gtk_label_set_line_wrap (GTK_LABEL(textmove->text), true);			//guide text wrap
 	gtk_widget_set_size_request(textmove->text, 370,-1);				//wrap on the bound of the scrolled window
 	gtk_label_set_line_wrap (GTK_LABEL(textmove->desctext), true);		//description text wrap
@@ -1005,6 +1014,7 @@ int call_gui() {
 	hbox2 = gtk_hbox_new(FALSE, 10);
 	hbox_desc_assum=gtk_hbox_new(FALSE,10);
 	hbox3 = gtk_hbox_new(FALSE, 10);
+	hbox_arc_button=gtk_hbox_new(FALSE,10);
 	hbox4_2 = gtk_hbox_new(FALSE, 10);				//guid text box
 	hbox4_1 = gtk_hbox_new(FALSE, 10);				//input text box
 	hbox4 = gtk_hbox_new(FALSE, 10);				// box of the two above
@@ -1018,7 +1028,7 @@ int call_gui() {
 	 gtk_box_pack_start(GTK_BOX(hbox3), enter_button, false, false, 10);
 	 gtk_box_pack_start(GTK_BOX(hbox2), combotext, false, false, 3);
 	 gtk_box_pack_start(GTK_BOX(hbox2), combo, false, false, 10);
-	 gtk_box_pack_start(GTK_BOX(hbox2), arc_button, false, false, 10);
+	 gtk_box_pack_start(GTK_BOX(hbox_arc_button), arc_button, false, false, 10);
 	 gtk_box_pack_start(GTK_BOX(hbox_desc), textmove->desctext, false, false, 10);
 	 gtk_box_pack_start(GTK_BOX(hbox_assum), textmove->assumtext, false, false, 10);
 	 gtk_box_pack_start(GTK_BOX(hbox4_2), textmove->text, false, false, 10);
@@ -1034,6 +1044,7 @@ int call_gui() {
 	 gtk_box_pack_start(GTK_BOX(hbox_desc_assum), scrolledwindow5, false, false, 3);
 	 
 	 gtk_box_pack_start(GTK_BOX(vbox_s2), hbox2, false, false, 3);
+	 gtk_box_pack_start(GTK_BOX(vbox_s2), hbox_arc_button, false, false, 3);	
 	 gtk_box_pack_start(GTK_BOX(vbox_s2), hbox_desc_assum, false, false, 3);
 	 gtk_box_pack_start(GTK_BOX(hbox4), scrolledwindow1, false, false, 5);
 	 gtk_box_pack_start(GTK_BOX(hbox4), scrolledwindow2, false, false, 5);
